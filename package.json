@@ -1,0 +1,31 @@
+{
+  "name": "sdn-thesis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^13.5.0",
+    "@types/pg": "^7.14.1",
+    "@types/uuid": "^3.4.6",
+    "nodemon": "^2.0.2",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "@types/graphlib": "^2.1.5",
+    "D": "^1.0.0",
+    "dotenv": "^8.2.0",
+    "graphlib": "^2.1.8",
+    "lodash": "^4.17.15",
+    "pg": "^7.18.2",
+    "uuid": "^3.4.0"
+  }
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"nodeLabel.js","sourceRoot":"","sources":["../../src/model/nodeLabel.ts"],"names":[],"mappings":";;AAGA,6BAA8B;AAE9B,MAAa,SAAS;IAQlB,MAAM,CAAC,YAAY;QACf,OAAO;YACH,EAAE,EAAE,IAAI,CAAC,EAAE,EAAE;YACb,SAAS,EAAE,EAAE;YACb,WAAW,EAAE,EAAE;YACf,QAAQ,EAAE,EAAE;SACf,CAAC;IACN,CAAC;CACJ;AAhBD,8BAgBC"}
