@@ -1,5 +1,5 @@
-import { SimulationResults } from "./simulationResults";
+// import { SimulationResults } from "./simulationResults";
 
-export interface Simulation {
-    start(): SimulationResults;    
-}
+// export interface Simulation {
+//     start(): SimulationResults;    
+// }

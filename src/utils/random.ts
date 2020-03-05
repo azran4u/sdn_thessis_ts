@@ -1,10 +1,7 @@
 import _ from 'lodash';
-import { Range } from './config';
-import { NodeLabel } from './model/nodeLabel';
-import { EdgeLabel } from './model/edgeLabel';
-import { Edge, Graph } from 'graphlib';
+import { Range } from '../config';
 
-export class Util {
+export class Random {
     static randomEnum<T>(anEnum: T): T[keyof T] {
         const enumValues = Object.keys(anEnum)
             .map(n => Number.parseInt(n))
@@ -22,13 +19,5 @@ export class Util {
         const min = range.min;
         const max = range.max;
         return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-
-    static getNodeLabel(graph: Graph, node: string): NodeLabel {
-        return graph.node(node) as any as NodeLabel;
-    }
-
-    static getEdgeLabel(graph: Graph, edge: Edge): EdgeLabel {
-        return graph.edge(edge) as any as EdgeLabel;
     }
 }

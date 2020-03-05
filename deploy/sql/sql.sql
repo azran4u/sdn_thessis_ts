@@ -13,7 +13,7 @@ $$;
 
 CREATE TABLE if not exists nodes (
   node_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  node_name VARCHAR NOT NULL
+  node_name VARCHAR NOT NULL UNIQUE
 );
 
 CREATE TABLE if not exists edges (

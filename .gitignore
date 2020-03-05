@@ -9,9 +9,12 @@ npm-debug.log*
 # Dependency directories
 node_modules/
 
+# javascript
+dist/
+
 # Output of 'npm pack'
 *.tgz
 
 # dotenv environment variables file
-# .env
+.env
 # .env.test

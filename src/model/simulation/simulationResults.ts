@@ -1,6 +1,6 @@
-import { Network } from "../network";
+// import { Network } from "../network";
 
-export class SimulationResults {
-    input: Network;
-    output: Network;
-}
+// export class SimulationResults {
+//     input: Network;
+//     output: Network;
+// }
