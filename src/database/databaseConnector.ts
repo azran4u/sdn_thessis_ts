@@ -1,5 +1,15 @@
 import { Pool, PoolClient, QueryResult } from 'pg';
 import logger = require('./../utils/logger');
+import { config } from '../config';
+
+export enum DB_TABLES {
+    NODES = 'nodes',
+    EDGES = 'edges',
+    PRODUCERS = 'producers',
+    SUBSCRIBERS = 'subscribers',
+    REQUESTS = 'requests',
+    REQUESTS_EDGES = 'requests_edges',
+}
 
 export interface DatabaseConnectorOptions {
     host: string;
@@ -86,13 +96,42 @@ export class DatabaseConnector {
         }
     }
 
-    public static generateParamFromArrayString(arr: string[]): string {
+    public async insertObject(table: DB_TABLES, obj: Object, conflict?: string[]) {        
+        try {
+            const columns = DatabaseConnector.sqlCoulmnsNames(obj);
+            const params = DatabaseConnector.sqlParams(Object.keys(obj).length);
+            const values = DatabaseConnector.sqlCoulmnsValues(obj);
+            let sql = `INSERT INTO ${table} (${columns}) VALUES (${params})`;
+            if( conflict ){
+                const onConflict = DatabaseConnector.sqlOnConflict(conflict);
+                sql = `${sql} ON CONFLICT (${onConflict}) DO NOTHING`
+            }                        
+            await DatabaseConnector.getInstance().insert(sql, values);
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    public static sqlOnConflict(conflict: string[]): string {        
+        return `${conflict.join(',')}`;
+    }
+
+    public static sqlParams(count: number): string {
         let params: string[] = [];
-        for (var i = 1; i <= arr.length; i++) {
+        for (var i = 1; i <= count; i++) {
             params.push('$' + i);
         }
         return params.join(',');
     }
+
+    public static sqlCoulmnsNames(obj: Object): string {
+        return Object.keys(obj).join(',');
+    }
+
+    public static sqlCoulmnsValues(obj: Object): string[] {
+        return Object.values(obj);
+    }
+
     // public async query(text: string, values?: string[]): Promise<any[]> {
     //     try{
     //         const {rows} = await this.pool.query(text, values);
@@ -197,3 +236,5 @@ export class DatabaseConnector {
         }
     }
 }
+
+export const dbInstance = DatabaseConnector.getInstance(config.postgres);
