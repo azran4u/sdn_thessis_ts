@@ -4,6 +4,7 @@ import { dbInstance as db, DatabaseConnector, NetworkNodeDal, GlobalDal } from '
 import { NetworkEdgeDal } from '../database/networkEdgeDal';
 import logger from '../utils/logger';
 import { config } from '../config';
+import { ProducerDal } from '../database/producerDal';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -120,5 +121,75 @@ describe('network node DAL', async () => {
       to_node: node2.id
     });
     expect(edge1.id).to.be.exist;
+  });
+  it('insert and read single producer', async () => {
+    try {
+      const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });
+      const producer = await ProducerDal.insertAndRead({
+        node: node1.id,
+        base_layer_bw: 1,
+        enhancement_layer_1_bw: 1,
+        enhancement_layer_2_bw: 1
+      });      
+      expect(producer.id).to.be.exist;
+    } catch (e) {
+      console.log(e);
+    }
+  });
+  it('insert multiple producers and read all', async () => {
+    try {
+      const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });
+      const node2 = await NetworkNodeDal.insertAndRead({ text: 'b' });
+      const node3 = await NetworkNodeDal.insertAndRead({ text: 'c' });
+      const producer1 = await ProducerDal.insertAndRead({
+        node: node1.id,
+        base_layer_bw: 1,
+        enhancement_layer_1_bw: 1,
+        enhancement_layer_2_bw: 1
+      });
+      const producer2 = await ProducerDal.insertAndRead({
+        node: node2.id,
+        base_layer_bw: 1,
+        enhancement_layer_1_bw: 1,
+        enhancement_layer_2_bw: 1
+      });          
+      const producer3 = await ProducerDal.insertAndRead({
+        node: node3.id,
+        base_layer_bw: 1,
+        enhancement_layer_1_bw: 1,
+        enhancement_layer_2_bw: 1
+      });        
+      const producers = await ProducerDal.getAll();
+      expect(producers.length).to.be.equal(3);
+    } catch (e) {
+      console.log(e);
+    }
+  });
+  it('add multiple producers to the same node', async () => {
+    try {
+      const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });      
+      const producer1 = await ProducerDal.insertAndRead({
+        node: node1.id,
+        base_layer_bw: 1,
+        enhancement_layer_1_bw: 1,
+        enhancement_layer_2_bw: 1
+      });
+      const producer2 = await ProducerDal.insertAndRead({
+        node: node1.id,
+        base_layer_bw: 1,
+        enhancement_layer_1_bw: 1,
+        enhancement_layer_2_bw: 1
+      });          
+      const producer3 = await ProducerDal.insertAndRead({
+        node: node1.id,
+        base_layer_bw: 1,
+        enhancement_layer_1_bw: 1,
+        enhancement_layer_2_bw: 1
+      });        
+      const producers = await ProducerDal.getAll();
+      expect(producers.length).to.be.equal(3);
+    } catch (e) {
+      console.log(e);
+    }
   });
 });

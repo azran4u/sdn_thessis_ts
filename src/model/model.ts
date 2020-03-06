@@ -11,3 +11,11 @@ export interface NetworkEdge {
     latency: number;
     jitter: number;
 }
+
+export interface Producer {
+    id: string;
+    node: number;
+    base_layer_bw: number;
+    enhancement_layer_1_bw: number;
+    enhancement_layer_2_bw: number;
+}
