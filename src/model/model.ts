@@ -19,3 +19,15 @@ export interface Producer {
     enhancement_layer_1_bw: number;
     enhancement_layer_2_bw: number;
 }
+
+export enum SUBSCRIBER_PRIORITY {
+    GOLD = 'GOLD',
+    SILVER = 'SILVER',
+    BRONZE = 'BRONZE'
+}
+
+export interface Subscriber {
+    id: string;
+    node: number;
+    priority: SUBSCRIBER_PRIORITY;    
+}

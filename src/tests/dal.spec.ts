@@ -5,6 +5,8 @@ import { NetworkEdgeDal } from '../database/networkEdgeDal';
 import logger from '../utils/logger';
 import { config } from '../config';
 import { ProducerDal } from '../database/producerDal';
+import { SubscriberDal } from '../database/subscriberDal';
+import { SUBSCRIBER_PRIORITY } from '../model/model';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -123,73 +125,105 @@ describe('network node DAL', async () => {
     expect(edge1.id).to.be.exist;
   });
   it('insert and read single producer', async () => {
-    try {
-      const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });
-      const producer = await ProducerDal.insertAndRead({
-        node: node1.id,
-        base_layer_bw: 1,
-        enhancement_layer_1_bw: 1,
-        enhancement_layer_2_bw: 1
-      });      
-      expect(producer.id).to.be.exist;
-    } catch (e) {
-      console.log(e);
-    }
+    const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });
+    const producer = await ProducerDal.insertAndRead({
+      node: node1.id,
+      base_layer_bw: 1,
+      enhancement_layer_1_bw: 1,
+      enhancement_layer_2_bw: 1
+    });
+    expect(producer.id).to.be.exist;
   });
   it('insert multiple producers and read all', async () => {
-    try {
-      const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });
-      const node2 = await NetworkNodeDal.insertAndRead({ text: 'b' });
-      const node3 = await NetworkNodeDal.insertAndRead({ text: 'c' });
-      const producer1 = await ProducerDal.insertAndRead({
-        node: node1.id,
-        base_layer_bw: 1,
-        enhancement_layer_1_bw: 1,
-        enhancement_layer_2_bw: 1
-      });
-      const producer2 = await ProducerDal.insertAndRead({
-        node: node2.id,
-        base_layer_bw: 1,
-        enhancement_layer_1_bw: 1,
-        enhancement_layer_2_bw: 1
-      });          
-      const producer3 = await ProducerDal.insertAndRead({
-        node: node3.id,
-        base_layer_bw: 1,
-        enhancement_layer_1_bw: 1,
-        enhancement_layer_2_bw: 1
-      });        
-      const producers = await ProducerDal.getAll();
-      expect(producers.length).to.be.equal(3);
-    } catch (e) {
-      console.log(e);
-    }
+    const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });
+    const node2 = await NetworkNodeDal.insertAndRead({ text: 'b' });
+    const node3 = await NetworkNodeDal.insertAndRead({ text: 'c' });
+    const producer1 = await ProducerDal.insertAndRead({
+      node: node1.id,
+      base_layer_bw: 1,
+      enhancement_layer_1_bw: 1,
+      enhancement_layer_2_bw: 1
+    });
+    const producer2 = await ProducerDal.insertAndRead({
+      node: node2.id,
+      base_layer_bw: 1,
+      enhancement_layer_1_bw: 1,
+      enhancement_layer_2_bw: 1
+    });
+    const producer3 = await ProducerDal.insertAndRead({
+      node: node3.id,
+      base_layer_bw: 1,
+      enhancement_layer_1_bw: 1,
+      enhancement_layer_2_bw: 1
+    });
+    const producers = await ProducerDal.getAll();
+    expect(producers.length).to.be.equal(3);
   });
   it('add multiple producers to the same node', async () => {
-    try {
-      const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });      
-      const producer1 = await ProducerDal.insertAndRead({
-        node: node1.id,
-        base_layer_bw: 1,
-        enhancement_layer_1_bw: 1,
-        enhancement_layer_2_bw: 1
-      });
-      const producer2 = await ProducerDal.insertAndRead({
-        node: node1.id,
-        base_layer_bw: 1,
-        enhancement_layer_1_bw: 1,
-        enhancement_layer_2_bw: 1
-      });          
-      const producer3 = await ProducerDal.insertAndRead({
-        node: node1.id,
-        base_layer_bw: 1,
-        enhancement_layer_1_bw: 1,
-        enhancement_layer_2_bw: 1
-      });        
-      const producers = await ProducerDal.getAll();
-      expect(producers.length).to.be.equal(3);
-    } catch (e) {
-      console.log(e);
-    }
+    const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });
+    const producer1 = await ProducerDal.insertAndRead({
+      node: node1.id,
+      base_layer_bw: 1,
+      enhancement_layer_1_bw: 1,
+      enhancement_layer_2_bw: 1
+    });
+    const producer2 = await ProducerDal.insertAndRead({
+      node: node1.id,
+      base_layer_bw: 1,
+      enhancement_layer_1_bw: 1,
+      enhancement_layer_2_bw: 1
+    });
+    const producer3 = await ProducerDal.insertAndRead({
+      node: node1.id,
+      base_layer_bw: 1,
+      enhancement_layer_1_bw: 1,
+      enhancement_layer_2_bw: 1
+    });
+    const producers = await ProducerDal.getAll();
+    expect(producers.length).to.be.equal(3);
+  });
+  it('add one subscriber and read it back', async () => {
+    const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });
+    const subscriber1 = await SubscriberDal.insertAndRead({
+      node: node1.id,
+      priority: SUBSCRIBER_PRIORITY.BRONZE
+    });
+    expect(subscriber1.id).to.be.exist;
+  });
+  it('add multiple subscribers and read them all', async () => {
+    const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });
+    const node2 = await NetworkNodeDal.insertAndRead({ text: 'b' });
+    const node3 = await NetworkNodeDal.insertAndRead({ text: 'c' });
+    const subscriber1 = await SubscriberDal.insertAndRead({
+      node: node1.id,
+      priority: SUBSCRIBER_PRIORITY.BRONZE
+    });
+    const subscriber2 = await SubscriberDal.insertAndRead({
+      node: node2.id,
+      priority: SUBSCRIBER_PRIORITY.BRONZE
+    });
+    const subscriber3 = await SubscriberDal.insertAndRead({
+      node: node3.id,
+      priority: SUBSCRIBER_PRIORITY.BRONZE
+    });
+    const subscribers = await SubscriberDal.getAll();
+    expect(subscribers.length).to.be.equal(3);
+  });
+  it('add multiple subscribers to the same node', async () => {
+    const node1 = await NetworkNodeDal.insertAndRead({ text: 'a' });    
+    const subscriber1 = await SubscriberDal.insertAndRead({
+      node: node1.id,
+      priority: SUBSCRIBER_PRIORITY.BRONZE
+    });
+    const subscriber2 = await SubscriberDal.insertAndRead({
+      node: node1.id,
+      priority: SUBSCRIBER_PRIORITY.BRONZE
+    });
+    const subscriber3 = await SubscriberDal.insertAndRead({
+      node: node1.id,
+      priority: SUBSCRIBER_PRIORITY.BRONZE
+    });
+    const subscribers = await SubscriberDal.getAll();
+    expect(subscribers.length).to.be.equal(3);
   });
 });
