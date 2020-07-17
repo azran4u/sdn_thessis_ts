@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",    
+    "build": "tsc",
     "start": "npm run build && node dist/index.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "test": "npm run build && env ENVIRONMENT=test mocha --timeout 10000 --require ts-node/register --require source-map-support/register --recursive src/**/*.spec.ts",
+    "test": "npm run build && env ENVIRONMENT=test mocha --timeout 100000 --require ts-node/register --require source-map-support/register --recursive src/**/*.spec.ts",
     "test-with-coverage": "tsc && nyc npm run test"
   },
   "author": "",
@@ -31,9 +31,12 @@
   "dependencies": {
     "@types/graphlib": "^2.1.5",
     "D": "^1.0.0",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "graphlib": "^2.1.8",
     "lodash": "^4.17.15",
+    "node-cache": "^5.1.1",
     "path": "^0.12.7",
     "pg": "^7.18.2",
     "uuid": "^3.4.0",

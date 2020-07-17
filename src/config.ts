@@ -1,19 +1,15 @@
-import { LAYER } from "./model/layer";
 import * as dotenv from 'dotenv';
 import path from 'path';
 
 //DO NOT COMMIT YOUR .env FILE
 // dotenv.config();
 const envFileName = process.env.ENVIRONMENT || "";
-dotenv.config({ path: path.resolve(__dirname, `../deploy/env/${envFileName}.env`)});
+dotenv.config({ path: path.resolve(__dirname, `../deploy/env/${envFileName}.env`) });
 
 export interface Range {
     min: number,
     max: number
 }
-
-export type LAYERS_BW_RANGE = { [key in keyof typeof LAYER]: Range };
-export type LAYERS_BW = { [key in keyof typeof LAYER]: number };
 
 export interface Config {
     general: {
@@ -21,10 +17,10 @@ export interface Config {
     }
     web_server: {
         port: number;
-    }    
+    }
     logger: {
         loggerLevel: string,
-    }    
+    }
     postgres: {
         host: string;
         database: string;
@@ -41,7 +37,9 @@ export interface Config {
     },
     producer: {
         count: number;
-        bw: LAYERS_BW_RANGE
+        base_layer_bw: Range;
+        enhancement_layer_1_bw: Range;
+        enhancement_layer_2_bw: Range;
     }
 }
 
@@ -54,7 +52,7 @@ export const config: Config = {
     },
     logger: {
         loggerLevel: 'debug',
-    },    
+    },
     postgres: {
         host: process.env.POSTGRES_HOST || 'POSTGRES_HOST',
         database: process.env.POSTGRES_DATABASE || 'POSTGRES_DATABASE',
@@ -66,8 +64,8 @@ export const config: Config = {
     },
     edge: {
         bw: {
-            min: 1,
-            max: 5
+            min: 10,
+            max: 15
         },
         latency: {
             min: 1,
@@ -80,10 +78,8 @@ export const config: Config = {
     },
     producer: {
         count: 3,
-        bw: {
-            BASE_LAYER: { min: 1, max: 10 },
-            EL1: { min: 5, max: 15 },
-            EL2: { min: 10, max: 20 }
-        }
+        base_layer_bw: { min: 1, max: 1 },
+        enhancement_layer_1_bw: { min: 2, max: 2 },
+        enhancement_layer_2_bw: { min: 3, max: 3 }
     }
 }
