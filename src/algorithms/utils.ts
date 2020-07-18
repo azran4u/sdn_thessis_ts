@@ -77,12 +77,12 @@ export function removeVideoRequestsWithHigherLayer(requests: VideoRequest[], req
 }
 
 export function addPathToGraph(path: NetworkPath, node: NetworkNode, dst: graphlib.Graph): graphlib.Graph {
-    path.edges.forEach(edge => {
-        const node = src.node(edge.from_node) as NetworkNode;
-        dst.setNode(node.id, { id: node.id, e2e } as ContentTreeNetworkNode)
+    // path.edges.forEach(edge => {
+    //     const node = src.node(edge.from_node) as NetworkNode;
+    //     dst.setNode(node.id, { id: node.id, e2e } as ContentTreeNetworkNode)
 
-    })
-    return G;
+    // })
+    return dst;
 }
 
 export function isValidPath(path: NetworkPath): boolean {
