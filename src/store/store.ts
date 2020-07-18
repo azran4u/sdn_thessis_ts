@@ -13,6 +13,8 @@ export class Store {
     private videoRequestStore: NodeCache;
     private videoRequestResultStore: NodeCache;
     private videoRequestResultEdgesStore: NodeCache;
+    private nodeSequence: number = 0;
+    private edgeSequence: number = 0;
 
     constructor() {
         this.networkNodeStore = new Cache();
@@ -26,22 +28,24 @@ export class Store {
     }
 
     addNetwordNode(): NetworkNode {
-        const key = uuidv4();
+        this.nodeSequence++;
+        const key = `node${this.nodeSequence}`;
         this.networkNodeStore.set<NetworkNode>(key, { id: key });
         return this.networkNodeStore.get(key);
     }
 
     addNetwordEdge(edge: Omit<NetworkEdge, 'id'>): NetworkEdge {
-        const key = uuidv4();
+        this.edgeSequence++;
+        const key = `edge${this.edgeSequence}`;
         this.networkEdgeStore.set<NetworkEdge>(key, { id: key, ...edge });
         return this.networkEdgeStore.get(key);
     }
 
-    addNetworkPath(path: Omit<NetworkPath, 'id'>): NetworkPath {
-        const key = uuidv4();
-        this.networkPathStore.set<NetworkPath>(key, { id: key, ...path });
-        return this.networkPathStore.get(key);
-    }
+    // addNetworkPath(path: Omit<NetworkPath, 'id'>): NetworkPath {
+    //     const key = uuidv4();
+    //     this.networkPathStore.set<NetworkPath>(key, { id: key, ...path });
+    //     return this.networkPathStore.get(key);
+    // }
 
     addProducer(producer: Omit<Producer, 'id'>): Producer {
         const key = uuidv4();

@@ -39,8 +39,13 @@ export interface Config {
         count: number;
         base_layer_bw: Range;
         enhancement_layer_1_bw: Range;
-        enhancement_layer_2_bw: Range;
+        enhancement_layer_2_bw: Range;        
+    },
+    subscriber:{
+        max_latency: number;
+        max_jitter: number;
     }
+
 }
 
 export const config: Config = {
@@ -81,5 +86,9 @@ export const config: Config = {
         base_layer_bw: { min: 1, max: 1 },
         enhancement_layer_1_bw: { min: 2, max: 2 },
         enhancement_layer_2_bw: { min: 3, max: 3 }
+    },
+    subscriber: {
+        max_latency: 10,
+        max_jitter: 5
     }
 }

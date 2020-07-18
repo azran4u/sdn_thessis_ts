@@ -1,4 +1,5 @@
 import * as graphlib from 'graphlib';
+import { Store } from '../store';
 
 export type EntityId = string;
 
@@ -6,6 +7,10 @@ export interface NetworkNode {
     id: EntityId;
 }
 
+export interface ContentTreeNetworkNode extends NetworkNode {
+    e2e_latency: number;
+    e2e_jitter: number;
+}
 export interface NetworkEdge {
     id: EntityId;
     from_node: EntityId;
@@ -16,8 +21,9 @@ export interface NetworkEdge {
 }
 
 export interface NetworkPath {
-    id: EntityId,
-    edges: EntityId[]
+    edges: NetworkEdge[],
+    latency: number,
+    jitter: number
 }
 
 export interface Producer {
@@ -58,21 +64,21 @@ export enum ALGORITHM {
 
 export interface VideoRequestResult {
     id: EntityId;
-    alogorithm: ALGORITHM; 
+    alogorithm: ALGORITHM;
     videoRequest: EntityId;
-    status: VIDEO_REQUEST_STATUS;    
+    status: VIDEO_REQUEST_STATUS;
     e2e_latency: number;
     e2e_jitter: number;
     e2e_hopCount: number;
 }
 
 export interface VideoRequestResultEdges {
-    id: EntityId;    
+    id: EntityId;
     videoRequestResult: EntityId;
-    edge: EntityId; 
+    edge: EntityId;
 }
 
-export interface AlgorithmInput {
+export interface NetworkGraph {
     graph: graphlib.Graph;
     subscribers: Subscriber[];
     producers: Producer[];
@@ -81,10 +87,27 @@ export interface AlgorithmInput {
 
 export interface AlgorithmOutput {
     videoRequestResult: VideoRequestResult[];
-    videoRequestResultEdges: VideoRequestResultEdges[];    
+    videoRequestResultEdges: VideoRequestResultEdges[];
 }
 
 export interface Content {
     producer: EntityId;
     layer: LAYER;
+}
+
+export interface NetworkGenerator {
+    generate(store: Store): NetworkGraph;
+}
+
+export interface Algorithm {
+    run(input: NetworkGraph): AlgorithmOutput;
+}
+
+export interface Scenario {
+    start();
+}
+
+export interface PathToTree {
+    path: NetworkPath;
+    node: NetworkNode;
 }

@@ -1,4 +1,0 @@
-export interface Scenario {
-    start();
-}
-
