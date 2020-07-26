@@ -1,5 +1,5 @@
 import * as NodeCache from 'node-cache';
-import { NetworkNode, NetworkEdge, NetworkPath, Producer, Subscriber, VideoRequestResult, VideoRequestResultEdges, VideoRequest } from '../model';
+import { NetworkNode, NetworkEdge, NetworkPath, Producer, Subscriber, VideoRequestResult, VideoRequestResultEdges, VideoRequest, ContentTrees } from '../model';
 import { v4 as uuidv4 } from 'uuid';
 
 const Cache = NodeCache.default;
@@ -15,6 +15,7 @@ export class Store {
     private videoRequestResultEdgesStore: NodeCache;
     private nodeSequence: number = 0;
     private edgeSequence: number = 0;
+    private contentTrees: ContentTrees;
 
     constructor() {
         this.networkNodeStore = new Cache();
@@ -24,7 +25,7 @@ export class Store {
         this.subscriberStore = new Cache();
         this.videoRequestStore = new Cache();
         this.videoRequestResultStore = new Cache();
-        this.videoRequestResultEdgesStore = new Cache();
+        this.videoRequestResultEdgesStore = new Cache();        
     }
 
     addNetwordNode(): NetworkNode {
@@ -105,6 +106,14 @@ export class Store {
         return this.videoRequestStore.keys().map(key => {
             return this.videoRequestStore.get(key);
         })
+    }
+
+    setContentTrees(contentTrees: ContentTrees) {
+        this.contentTrees = contentTrees;
+    }
+
+    getContentTrees(): ContentTrees {
+        return this.contentTrees;
     }
 }
 

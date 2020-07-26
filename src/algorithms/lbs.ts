@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import * as graphlib from 'graphlib';
-import { Algorithm, AlgorithmOutput, VideoRequestResult, VIDEO_REQUEST_STATUS, NetworkEdge, NetworkGraph, NetworkPath, ContentTreeNetworkNode, PathToTree } from '../model';
-import { getProducerBwByLayer, contentToKey, dijkstra, removeVideoRequestsWithHigherLayer, isValidPath } from './utils';
+import { Algorithm, AlgorithmOutput, VideoRequestResult, VIDEO_REQUEST_STATUS, NetworkEdge, NetworkGraph, NetworkPath, ContentTreeNetworkNode, PathToTree, NetworkNode, ALGORITHM } from '../model';
+import { getProducerBwByLayer, contentToKey, dijkstra, removeVideoRequestsWithHigherLayer, isValidPath, selectBestPath } from './utils';
 import { config } from '../config';
 
 export class LBS implements Algorithm {
@@ -44,7 +44,7 @@ export class LBS implements Algorithm {
             if (
                 (result && result.status === VIDEO_REQUEST_STATUS.SERVED) ||
                 (result && result.status === VIDEO_REQUEST_STATUS.INVALID)) {
-                return;
+                continue;
             }
 
             // P holds all possible paths
@@ -73,6 +73,8 @@ export class LBS implements Algorithm {
                 // LBS doesn't check the e2e latency and jitter but only to the tree intersection point
                 if (isValidPath(path)) {
                     P.push({ path: path, node: tree.node(v) });
+                } else {
+                    // add result to videoRequestResults
                 }
             }
             // no paths found for this request
@@ -81,13 +83,24 @@ export class LBS implements Algorithm {
                 sortedRequests = removeVideoRequestsWithHigherLayer(sortedRequests, request);
             } else {
                 // find best path
+                const bestPath = selectBestPath(P);
 
+                // update G with the served bandwidth
+                bestPath.path.edges.forEach(edge => {
+                    const edgeBefore = input.graph.edge(edge.from_node, edge.to_node) as NetworkEdge;
+                    input.graph.setEdge(edge.from_node, edge.to_node, { ...edgeBefore, bw: (edgeBefore.bw - requestBw) });
+                })
                 // add best path to content tree
+                bestPath.path.edges.forEach(edge => {
+                    tree.setEdge(edge.from_node, edge.to_node, edge);
+                });
+                contentTrees.set(contentToKey(request.producer, request.layer), tree);
             }
         }
         return {
             videoRequestResult: undefined,
-            videoRequestResultEdges: undefined
+            videoRequestResultEdges: undefined,
+            contentTrees: contentTrees
         };
     }
 }

@@ -1,6 +1,7 @@
-import { Producer, LAYER, NetworkEdge, NetworkPath, EntityId, VideoRequest, ContentTreeNetworkNode, NetworkNode } from "../model";
+import { Producer, LAYER, NetworkEdge, NetworkPath, EntityId, VideoRequest, ContentTreeNetworkNode, NetworkNode, PathToTree } from "../model";
 import * as graphlib from 'graphlib';
 import { config } from '../config';
+import _ from 'lodash';
 
 export function getProducerBwByLayer(producer: Producer, layer: LAYER): number {
     let bw;
@@ -88,4 +89,15 @@ export function addPathToGraph(path: NetworkPath, node: NetworkNode, dst: graphl
 export function isValidPath(path: NetworkPath): boolean {
     return (path.latency < config.subscriber.max_latency) &&
         (path.jitter < config.subscriber.max_jitter);
+}
+
+export function selectBestPath(paths: PathToTree[]): PathToTree {
+    if (paths.length === 0) throw new Error('invalid input to selectBestPath');
+    const minLatency = _.minBy(paths, path => { return path.path.latency }).path.latency;
+    const lowestLatencyPaths = paths.filter(path => { return path.path.latency === minLatency });
+    const minJitter = _.minBy(lowestLatencyPaths, path => { return path.path.jitter }).path.jitter;
+    const lowestJitterPaths = lowestLatencyPaths.filter(path => { return path.path.jitter === minJitter });
+    const minHopCount = _.minBy(lowestJitterPaths, path => { return path.path.edges.length }).path.edges.length;
+    const lowestHopCountPaths = lowestJitterPaths.filter(path => { return path.path.edges.length === minHopCount });
+    return lowestHopCountPaths[0];
 }

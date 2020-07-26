@@ -85,9 +85,11 @@ export interface NetworkGraph {
     requests: VideoRequest[];
 }
 
+export type ContentTrees = Map<string, graphlib.Graph>;
 export interface AlgorithmOutput {
     videoRequestResult: VideoRequestResult[];
     videoRequestResultEdges: VideoRequestResultEdges[];
+    contentTrees: ContentTrees;
 }
 
 export interface Content {

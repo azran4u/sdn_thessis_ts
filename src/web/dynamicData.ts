@@ -1,43 +1,57 @@
 import { Store } from "../store";
+import { NetworkNode, NetworkEdge } from "../model";
+import { treeToNetworkNodesAndEdges } from "../graph/networkGraph";
 
 export interface d3GraphNode {
-    id: string;
+    name: string;
     group: number;
 }
 
 export interface d3GraphLink {
-    source: string;
-    target: string;
+    source: number;
+    target: number;
     value: number
 }
 
 export interface d3GraphDataModel {
     nodes: d3GraphNode[],
-    links: d3GraphLink[]
+    edges: d3GraphLink[]
 }
 
 export class D3Formatter {
+
     constructor(private store: Store) {
-        this.store = store;
+
     }
 
-    getData(): d3GraphDataModel {
-        const nodes = this.store.allNodes();
-        const edges = this.store.allEdges();
+    convertToD3Model(nodes: NetworkNode[], edges: NetworkEdge[]): d3GraphDataModel {
+        const nodesRes = nodes.map(node => {
+            return {
+                name: node.id,
+                group: 1
+            }
+        });
+        const edgesRes = edges.map(edge => {
+            return {
+                source: nodesRes.findIndex(node => { return node.name === edge.from_node }),
+                target: nodesRes.findIndex(node => { return node.name === edge.to_node }),
+                value: edge.latency
+            }
+        });
         return {
-            nodes: nodes.map(node => {
-                return {
-                    id: node.id,
-                    group: 1
-                }
-            }),
-            links: edges.map(edge => {
-                return {
-                    source: edge.from_node,
-                    target: edge.to_node,
-                    value: edge.latency
-                }
-            })
+            nodes: nodesRes,
+            edges: edgesRes
         };
+    }
+    getData() {
+        const graphs: d3GraphDataModel[] = [];
+        graphs.push(this.convertToD3Model(this.store.allNodes(), this.store.allEdges()));
+        this.store.getContentTrees().forEach( (tree, key, map) => {
+            const { nodes, edges } = treeToNetworkNodesAndEdges(tree);
+            graphs.push(this.convertToD3Model(nodes, edges));
+        })
+        return {
+            data: graphs
+        }
     }
 }
