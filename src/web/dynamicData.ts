@@ -45,7 +45,10 @@ export class D3Formatter {
     }
     getData() {
         const graphs: d3GraphDataModel[] = [];
+        // full graph
         graphs.push(this.convertToD3Model(this.store.allNodes(), this.store.allEdges()));
+
+        // each content graph
         this.store.getContentTrees().forEach( (tree, key, map) => {
             const { nodes, edges } = treeToNetworkNodesAndEdges(tree);
             graphs.push(this.convertToD3Model(nodes, edges));

@@ -4,14 +4,14 @@ import { config } from "../config";
 import { buildNetwork } from "../graph/networkGraph";
 import { Store } from "../store";
 
-export class ThreeNodeNetwork implements NetworkGenerator {
+export class ThreeNodeNetwork extends NetworkGenerator {
 
-    public generate(store: Store): NetworkGraph {
-        const node1 = store.addNetwordNode();
-        const node2 = store.addNetwordNode();
-        const node3 = store.addNetwordNode();
+    generate(): NetworkGraph {
+        const node1 = this.store.addNetwordNode();
+        const node2 = this.store.addNetwordNode();
+        const node3 = this.store.addNetwordNode();
 
-        const edge1 = store.addNetwordEdge({
+        const edge1 = this.store.addNetwordEdge({
             from_node: node1.id,
             to_node: node2.id,
             bw: Random.randomIntFromInterval(config.edge.bw),
@@ -20,7 +20,7 @@ export class ThreeNodeNetwork implements NetworkGenerator {
             latency: 1
         });
 
-        const edge2 = store.addNetwordEdge({
+        const edge2 = this.store.addNetwordEdge({
             from_node: node1.id,
             to_node: node3.id,
             bw: Random.randomIntFromInterval(config.edge.bw),
@@ -29,7 +29,7 @@ export class ThreeNodeNetwork implements NetworkGenerator {
             latency: 2
         });
 
-        const edge3 = store.addNetwordEdge({
+        const edge3 = this.store.addNetwordEdge({
             from_node: node2.id,
             to_node: node3.id,
             bw: Random.randomIntFromInterval(config.edge.bw),
@@ -38,7 +38,7 @@ export class ThreeNodeNetwork implements NetworkGenerator {
             latency: 1
         });
 
-        const edge4 = store.addNetwordEdge({
+        const edge4 = this.store.addNetwordEdge({
             from_node: node2.id,
             to_node: node1.id,
             bw: Random.randomIntFromInterval(config.edge.bw),
@@ -46,7 +46,7 @@ export class ThreeNodeNetwork implements NetworkGenerator {
             latency: Random.randomIntFromInterval(config.edge.latency),
         });
 
-        const edge5 = store.addNetwordEdge({
+        const edge5 = this.store.addNetwordEdge({
             from_node: node3.id,
             to_node: node1.id,
             bw: Random.randomIntFromInterval(config.edge.bw),
@@ -54,7 +54,7 @@ export class ThreeNodeNetwork implements NetworkGenerator {
             latency: Random.randomIntFromInterval(config.edge.latency),
         });
 
-        const edge6 = store.addNetwordEdge({
+        const edge6 = this.store.addNetwordEdge({
             from_node: node3.id,
             to_node: node2.id,
             bw: Random.randomIntFromInterval(config.edge.bw),
@@ -62,28 +62,30 @@ export class ThreeNodeNetwork implements NetworkGenerator {
             latency: Random.randomIntFromInterval(config.edge.latency),
         });
 
-        const producer1 = store.addProducer({
+        const producer1 = this.store.addProducer({
+            id: "producer1",
             node: node1.id,
             base_layer_bw: Random.randomIntFromInterval(config.producer.base_layer_bw),
             enhancement_layer_1_bw: Random.randomIntFromInterval(config.producer.enhancement_layer_1_bw),
             enhancement_layer_2_bw: Random.randomIntFromInterval(config.producer.enhancement_layer_2_bw)
         });
 
-        const subscriber1 = store.addSubscriber({
+        const subscriber1 = this.store.addSubscriber({
+            id: "subscriber1",
             node: node2.id,
             priority: 'GOLD'
         });
 
-        const videoRequest1 = store.addVideoRequest({
+        const videoRequest1 = this.store.addVideoRequest({
             producer: producer1.id,
             subscriber: subscriber1.id,
             layer: Random.layer()
         });
 
-        const g = buildNetwork(store.allNodes(), store.allEdges());
-        const producers = store.allProducers();
-        const subscribers = store.allSubscribers();
-        const requests = store.allVideoRequests();
+        const g = buildNetwork(this.store.allNodes(), this.store.allEdges());
+        const producers = this.store.allProducers();
+        const subscribers = this.store.allSubscribers();
+        const requests = this.store.allVideoRequests();
 
         return {
             graph: g,

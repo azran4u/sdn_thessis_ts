@@ -1,18 +1,14 @@
 import _ from 'lodash';
 import * as graphlib from 'graphlib';
-import { Algorithm, AlgorithmOutput, VideoRequestResult, VIDEO_REQUEST_STATUS, NetworkEdge, NetworkGraph, NetworkPath, ContentTreeNetworkNode, PathToTree, NetworkNode, ALGORITHM } from '../model';
-import { getProducerBwByLayer, contentToKey, dijkstra, removeVideoRequestsWithHigherLayer, isValidPath, selectBestPath } from './utils';
-import { config } from '../config';
+import { Algorithm, AlgorithmOutput, VIDEO_REQUEST_STATUS, NetworkGraph, ContentTreeNetworkNode, PathToTree, ALGORITHM, VideoRequestResultInput, NetworkNode } from '../model';
+import { GraphUtil } from './utils';
 
 export class LBS implements Algorithm {
     run(input: NetworkGraph): AlgorithmOutput {
-        // deep copy to preserve the original network
-        // const originalNetwork = _.cloneDeep(network);
 
         const contentTrees = new Map<string, graphlib.Graph>();
 
-        const videoRequestResults: VideoRequestResult[] = [];
-        // const vubscVideoRequestResultEdgesribers: VideoRequestResultEdges[] = [];
+        const videoRequestResults: VideoRequestResultInput[] = [];
 
         // init the map with empty graph for each content
         for (const request of input.requests) {
@@ -28,10 +24,11 @@ export class LBS implements Algorithm {
             // g.setNode(node, input.graph.node(node));
             g.setNode(node, {
                 id: input.graph.node(node),
+                e2e_hopCount: 1,
                 e2e_latency: 0,
                 e2e_jitter: 0
             } as ContentTreeNetworkNode);
-            contentTrees.set(contentToKey(request.producer, request.layer), g);
+            contentTrees.set(GraphUtil.contentToKey(request.producer, request.layer), g);
         }
 
         // sort requests by layer
@@ -39,7 +36,7 @@ export class LBS implements Algorithm {
 
         for (const request of sortedRequests) {
 
-            const result = videoRequestResults.find(x => x.videoRequest === request.id);
+            const result = videoRequestResults.find(x => x.videoRequestId === request.id);
 
             if (
                 (result && result.status === VIDEO_REQUEST_STATUS.SERVED) ||
@@ -53,53 +50,73 @@ export class LBS implements Algorithm {
             // remove edges that don't meet the bandwidth requiremnt
             const producer = input.producers.find(x => x.id === request.producer);
             const subscriber = input.subscribers.find(x => x.id === request.subscriber);
-            const requestBw = getProducerBwByLayer(producer, request.layer);
+            const requestBw = GraphUtil.getProducerBwByLayer(producer, request.layer);
 
-            const H = _.cloneDeep(input.graph);
-            _.forEach(H.edges(), (e) => {
-                const edge = H.edge(e) as any as NetworkEdge;
-                if (edge.bw < requestBw) {
-                    H.removeEdge(e);
-                }
-            });
+            const H = GraphUtil.removeEdgesWithoutEnoughBw(input.graph, requestBw);
 
             // get all nodes that are part of (producer,layer)
-            const tree = contentTrees.get(contentToKey(request.producer, request.layer));
+            let tree = contentTrees.get(GraphUtil.contentToKey(request.producer, request.layer));
             const scki = tree.nodes();
 
             for (const v of scki) {
                 // find shortest latency path in H
-                const path = dijkstra(H, v, subscriber.node);
+                const path = GraphUtil.dijkstra(H, v, subscriber.node);
                 // LBS doesn't check the e2e latency and jitter but only to the tree intersection point
-                if (isValidPath(path)) {
-                    P.push({ path: path, node: tree.node(v) });
-                } else {
-                    // add result to videoRequestResults
+                if (GraphUtil.isValidPath(path)) {
+                    P.push({ path: path, node: H.node(v) });
                 }
             }
             // no paths found for this request
             if (P.length === 0) {
-                // remove requests to this subscriber with higher layers
-                sortedRequests = removeVideoRequestsWithHigherLayer(sortedRequests, request);
+
+                // set video request result to NOT_SREVED
+                videoRequestResults.push({
+                    alogorithm: ALGORITHM.LBS,
+                    videoRequestId: request.id,
+                    status: VIDEO_REQUEST_STATUS.NOT_SERVED,
+                    e2e_hopCount: -1,
+                    e2e_jitter: -1,
+                    e2e_latency: -1
+                });
+
+                // set upper layer requests INVALID
+                const higherLayerRequests = GraphUtil.findHigherLayerRequests(sortedRequests, request);
+                higherLayerRequests.forEach(req => {
+                    videoRequestResults.push({
+                        alogorithm: ALGORITHM.LBS,
+                        videoRequestId: req.id,
+                        status: VIDEO_REQUEST_STATUS.INVALID,
+                        e2e_hopCount: -1,
+                        e2e_jitter: -1,
+                        e2e_latency: -1
+                    });
+                })
             } else {
                 // find best path
-                const bestPath = selectBestPath(P);
+                const bestPath = GraphUtil.selectBestPath(P);
 
-                // update G with the served bandwidth
-                bestPath.path.edges.forEach(edge => {
-                    const edgeBefore = input.graph.edge(edge.from_node, edge.to_node) as NetworkEdge;
-                    input.graph.setEdge(edge.from_node, edge.to_node, { ...edgeBefore, bw: (edgeBefore.bw - requestBw) });
-                })
-                // add best path to content tree
-                bestPath.path.edges.forEach(edge => {
-                    tree.setEdge(edge.from_node, edge.to_node, edge);
+                // update G
+                input.graph = GraphUtil.updatePathBwInGraph(bestPath.path, requestBw, input.graph);
+
+                // update content tree
+                tree = GraphUtil.addPathToTree(bestPath, tree);
+                contentTrees.set(GraphUtil.contentToKey(request.producer, request.layer), tree);
+
+                const lastNode = tree.node(subscriber.node) as ContentTreeNetworkNode;
+
+                // update video request results
+                videoRequestResults.push({
+                    alogorithm: ALGORITHM.LBS,
+                    videoRequestId: request.id,
+                    status: VIDEO_REQUEST_STATUS.SERVED,
+                    e2e_hopCount: lastNode.e2e_hopCount,
+                    e2e_jitter: lastNode.e2e_jitter,
+                    e2e_latency: lastNode.e2e_latency
                 });
-                contentTrees.set(contentToKey(request.producer, request.layer), tree);
             }
         }
         return {
-            videoRequestResult: undefined,
-            videoRequestResultEdges: undefined,
+            videoRequestResult: videoRequestResults,
             contentTrees: contentTrees
         };
     }

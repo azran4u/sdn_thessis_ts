@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import { data } from './staticData';
 import { D3Formatter } from './dynamicData';
 import { Store } from '../store';
 

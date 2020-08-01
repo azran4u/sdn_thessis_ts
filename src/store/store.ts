@@ -25,7 +25,7 @@ export class Store {
         this.subscriberStore = new Cache();
         this.videoRequestStore = new Cache();
         this.videoRequestResultStore = new Cache();
-        this.videoRequestResultEdgesStore = new Cache();        
+        this.videoRequestResultEdgesStore = new Cache();
     }
 
     addNetwordNode(): NetworkNode {
@@ -48,16 +48,14 @@ export class Store {
     //     return this.networkPathStore.get(key);
     // }
 
-    addProducer(producer: Omit<Producer, 'id'>): Producer {
-        const key = uuidv4();
-        this.producerStore.set<Producer>(key, { id: key, ...producer });
-        return this.producerStore.get(key);
+    addProducer(producer: Producer): Producer {
+        this.producerStore.set<Producer>(producer.id, { ...producer });
+        return this.producerStore.get(producer.id);
     }
 
-    addSubscriber(subscriber: Omit<Subscriber, 'id'>): Subscriber {
-        const key = uuidv4();
-        this.subscriberStore.set<Subscriber>(key, { id: key, ...subscriber });
-        return this.subscriberStore.get(key);
+    addSubscriber(subscriber: Subscriber): Subscriber {
+        this.subscriberStore.set<Subscriber>(subscriber.id, { ...subscriber });
+        return this.subscriberStore.get(subscriber.id);
     }
 
     addVideoRequest(videoRequest: Omit<VideoRequest, 'id'>): VideoRequest {
@@ -105,6 +103,12 @@ export class Store {
     allVideoRequests(): VideoRequest[] {
         return this.videoRequestStore.keys().map(key => {
             return this.videoRequestStore.get(key);
+        })
+    }
+
+    allVideoRequestsResults(): VideoRequestResult[] {
+        return this.videoRequestResultStore.keys().map(key => {
+            return this.videoRequestResultStore.get(key);
         })
     }
 

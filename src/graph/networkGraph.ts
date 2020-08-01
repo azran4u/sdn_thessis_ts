@@ -29,7 +29,7 @@ export function buildNetwork(nodes: NetworkNode[], edges: NetworkEdge[]): graphl
 
 export function treeToNetworkNodesAndEdges(tree: graphlib.Graph): NetworkNodesAndEdges {
     const nodes = tree.nodes().map(node => {
-        return tree.node(node) as NetworkNode
+        return {id: node} as NetworkNode
     });
     const edges = tree.edges().map(edge => {
         return tree.edge(edge) as NetworkEdge

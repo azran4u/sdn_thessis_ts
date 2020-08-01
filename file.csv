@@ -1,0 +1,5 @@
+id,subscriber,producer,layer,alogorithm,status,e2e_latency,e2e_jitter,e2e_hopCount
+1ca03c82-25cb-4b8d-a6de-46d33ce06830,subscriber1,producer1,BASE,LBS,SERVED,27,11,5
+f70fcb28-2fb1-4062-a5ca-8734e371110c,subscriber2,producer2,BASE,LBS,SERVED,19,13,4
+4436dfe4-0bb3-4e09-97d7-605bea028841,subscriber2,producer2,EL1,LBS,NOT_SERVED,-1,-1,-1
+def77c9f-1aad-4187-b6e4-27caa141804e,subscriber2,producer2,EL2,LBS,INVALID,-1,-1,-1

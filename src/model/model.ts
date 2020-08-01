@@ -8,6 +8,7 @@ export interface NetworkNode {
 }
 
 export interface ContentTreeNetworkNode extends NetworkNode {
+    e2e_hopCount: number;
     e2e_latency: number;
     e2e_jitter: number;
 }
@@ -54,7 +55,8 @@ export interface VideoRequest {
 export enum VIDEO_REQUEST_STATUS {
     PENDING = "PENDING",
     INVALID = "INVALID",
-    SERVED = "SERVED"
+    SERVED = "SERVED",
+    NOT_SERVED = "NOT_SERVED"
 }
 
 export enum ALGORITHM {
@@ -62,10 +64,11 @@ export enum ALGORITHM {
     LLVS = "LLVS"
 }
 
+export type VideoRequestResultInput = Omit<VideoRequestResult, 'id'>;
 export interface VideoRequestResult {
     id: EntityId;
     alogorithm: ALGORITHM;
-    videoRequest: EntityId;
+    videoRequestId: EntityId;
     status: VIDEO_REQUEST_STATUS;
     e2e_latency: number;
     e2e_jitter: number;
@@ -87,8 +90,7 @@ export interface NetworkGraph {
 
 export type ContentTrees = Map<string, graphlib.Graph>;
 export interface AlgorithmOutput {
-    videoRequestResult: VideoRequestResult[];
-    videoRequestResultEdges: VideoRequestResultEdges[];
+    videoRequestResult: VideoRequestResultInput[];
     contentTrees: ContentTrees;
 }
 
@@ -97,8 +99,9 @@ export interface Content {
     layer: LAYER;
 }
 
-export interface NetworkGenerator {
-    generate(store: Store): NetworkGraph;
+export abstract class NetworkGenerator {
+    constructor(protected store: Store) { };
+    abstract generate(): NetworkGraph;
 }
 
 export interface Algorithm {

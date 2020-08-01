@@ -88,7 +88,7 @@ export const config: Config = {
         enhancement_layer_2_bw: { min: 3, max: 3 }
     },
     subscriber: {
-        max_latency: 10,
-        max_jitter: 5
+        max_latency: 100,
+        max_jitter: 50
     }
 }
