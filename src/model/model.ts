@@ -53,8 +53,7 @@ export interface VideoRequest {
 }
 
 export enum VIDEO_REQUEST_STATUS {
-    PENDING = "PENDING",
-    INVALID = "INVALID",
+    REJECTED = "REJECTED",
     SERVED = "SERVED",
     NOT_SERVED = "NOT_SERVED"
 }

@@ -40,7 +40,7 @@ export class LBS implements Algorithm {
 
             if (
                 (result && result.status === VIDEO_REQUEST_STATUS.SERVED) ||
-                (result && result.status === VIDEO_REQUEST_STATUS.INVALID)) {
+                (result && result.status === VIDEO_REQUEST_STATUS.REJECTED)) {
                 continue;
             }
 
@@ -85,7 +85,7 @@ export class LBS implements Algorithm {
                     videoRequestResults.push({
                         alogorithm: ALGORITHM.LBS,
                         videoRequestId: req.id,
-                        status: VIDEO_REQUEST_STATUS.INVALID,
+                        status: VIDEO_REQUEST_STATUS.REJECTED,
                         e2e_hopCount: -1,
                         e2e_jitter: -1,
                         e2e_latency: -1
