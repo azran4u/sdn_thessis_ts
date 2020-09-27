@@ -30,9 +30,9 @@ export class SimulationUtil {
                 layer: videoRequest.layer,
                 alogorithm: result.alogorithm,
                 status: result.status,
-                e2e_latency: result.e2e_latency,
-                e2e_jitter: result.e2e_jitter,
-                e2e_hopCount: result.e2e_hopCount
+                e2e_latency: result.e2e_path.latency,
+                e2e_jitter: result.e2e_path.jitter,
+                e2e_hopCount: result.e2e_path.hopCount
             }
         })
 

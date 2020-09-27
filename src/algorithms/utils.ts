@@ -3,11 +3,10 @@ import {
   LAYER,
   NetworkEdge,
   NetworkPath,
-  EntityId,
   VideoRequest,
   ContentTreeNetworkNode,
   NetworkNode,
-  PathToTree,
+  AvailablePath,
 } from "../model";
 import * as graphlib from "graphlib";
 import { config } from "../config";
@@ -46,9 +45,19 @@ export class GraphUtil {
       return edge.latency;
     });
     const latency = +paths[dst].distance;
+    if (latency >= Number.MAX_SAFE_INTEGER) {
+      return {
+        edges: [],
+        latency: Number.MAX_SAFE_INTEGER,
+        hopCount: 0,
+        jitter: Number.MAX_SAFE_INTEGER,
+        availableBw: 0,
+      };
+    }
     let jitter = 0;
     const path: NetworkEdge[] = [];
     let node = dst;
+    let availableBw = Number.MAX_SAFE_INTEGER;
     while (!!paths[node].predecessor) {
       const edge = (G.edge(
         paths[node].predecessor,
@@ -57,11 +66,16 @@ export class GraphUtil {
       path.push(edge);
       jitter += edge.jitter;
       node = paths[node].predecessor;
+      if (edge.bw < availableBw) {
+        availableBw = edge.bw;
+      }
     }
     return {
       edges: path,
       latency: latency,
       jitter: jitter,
+      hopCount: path.length,
+      availableBw: availableBw,
     };
   }
 
@@ -105,25 +119,25 @@ export class GraphUtil {
     );
   }
 
-  static selectBestPath(paths: PathToTree[]): PathToTree {
+  static selectBestPath(paths: AvailablePath[]): AvailablePath {
     if (paths.length === 0) throw new Error("invalid input to selectBestPath");
     const minLatency = _.minBy(paths, (path) => {
-      return path.path.latency;
-    }).path.latency;
+      return path.e2e_path.latency;
+    }).e2e_path.latency;
     const lowestLatencyPaths = paths.filter((path) => {
-      return path.path.latency === minLatency;
+      return path.e2e_path.latency === minLatency;
     });
     const minJitter = _.minBy(lowestLatencyPaths, (path) => {
-      return path.path.jitter;
-    }).path.jitter;
+      return path.e2e_path.jitter;
+    }).e2e_path.jitter;
     const lowestJitterPaths = lowestLatencyPaths.filter((path) => {
-      return path.path.jitter === minJitter;
+      return path.e2e_path.jitter === minJitter;
     });
     const minHopCount = _.minBy(lowestJitterPaths, (path) => {
-      return path.path.edges.length;
-    }).path.edges.length;
+      return path.e2e_path.edges.length;
+    }).e2e_path.edges.length;
     const lowestHopCountPaths = lowestJitterPaths.filter((path) => {
-      return path.path.edges.length === minHopCount;
+      return path.e2e_path.edges.length === minHopCount;
     });
     return lowestHopCountPaths[0];
   }
@@ -136,7 +150,11 @@ export class GraphUtil {
     _.forEach(H.edges(), (e) => {
       const edge = (H.edge(e) as any) as NetworkEdge;
       if (edge.bw < minBw) {
-        H.removeEdge(e);
+        H.setEdge(edge.from_node, edge.to_node, {
+          ...edge,
+          latency: Number.MAX_SAFE_INTEGER,
+        } as NetworkEdge);
+        // H.removeEdge(e);
       }
     });
     return H;
@@ -160,11 +178,11 @@ export class GraphUtil {
   }
 
   static addPathToTree(
-    pathToGraph: PathToTree,
+    pathToGraph: AvailablePath,
     G: graphlib.Graph
   ): graphlib.Graph {
-    let currentNode = pathToGraph.node;
-    const edges = pathToGraph.path.edges;
+    let currentNode = pathToGraph.v;
+    const edges = pathToGraph.pathToV.edges;
     while (edges.length > 0) {
       const currentEdgeIndex = edges.findIndex((edge) => {
         return edge.from_node === currentNode.id;
@@ -187,5 +205,53 @@ export class GraphUtil {
       currentNode = toNode;
     }
     return G;
+  }
+
+  static initContentTress(
+    graph: graphlib.Graph,
+    requests: VideoRequest[],
+    producers: Producer[]
+  ): Map<string, graphlib.Graph> {
+    const contentTrees = new Map<string, graphlib.Graph>();
+    for (const request of requests) {
+      const g = new graphlib.Graph({
+        directed: true,
+        multigraph: false, // tree isn't multigraph
+        compound: false,
+      });
+
+      // add the node the producer is connected to
+      const producer = producers.find((x) => x.id === request.producer);
+      const node = producer.node;
+      // g.setNode(node, input.graph.node(node));
+      g.setNode(node, {
+        id: graph.node(node),
+        e2e_hopCount: 1,
+        e2e_latency: 0,
+        e2e_jitter: 0,
+      } as ContentTreeNetworkNode);
+      contentTrees.set(
+        GraphUtil.contentToKey(request.producer, request.layer),
+        g
+      );
+    }
+    return contentTrees;
+  }
+
+  static joinPaths(a: NetworkPath, b: NetworkPath): NetworkPath {
+    const c: NetworkPath = b;
+    if (a.edges.length === 0) return b;
+    if (b.edges.length === 0) return a;
+
+    c.edges = [...a.edges, ...b.edges];
+    c.availableBw = Math.min(a.availableBw, b.availableBw);
+    c.hopCount = a.hopCount + b.hopCount;
+    c.latency = a.latency + b.latency;
+    c.jitter = a.jitter + b.jitter;
+    return c;
+  }
+
+  static isOdd(num): boolean {
+    return num % 2 === 1;
   }
 }

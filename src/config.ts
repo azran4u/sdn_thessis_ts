@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import { NumericDictionary } from 'lodash';
 import path from 'path';
 
 //DO NOT COMMIT YOUR .env FILE
@@ -44,6 +45,7 @@ export interface Config {
     subscriber:{
         max_latency: number;
         max_jitter: number;
+        decodable_time: number;
     }
 
 }
@@ -89,6 +91,7 @@ export const config: Config = {
     },
     subscriber: {
         max_latency: 100,
-        max_jitter: 50
+        max_jitter: 50,
+        decodable_time: 20
     }
 }

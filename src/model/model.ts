@@ -24,7 +24,9 @@ export interface NetworkEdge {
 export interface NetworkPath {
     edges: NetworkEdge[],
     latency: number,
-    jitter: number
+    jitter: number,
+    hopCount: number;
+    availableBw: number;
 }
 
 export interface Producer {
@@ -69,9 +71,7 @@ export interface VideoRequestResult {
     alogorithm: ALGORITHM;
     videoRequestId: EntityId;
     status: VIDEO_REQUEST_STATUS;
-    e2e_latency: number;
-    e2e_jitter: number;
-    e2e_hopCount: number;
+    e2e_path: NetworkPath;    
 }
 
 export interface VideoRequestResultEdges {
@@ -111,7 +111,9 @@ export interface Scenario {
     start();
 }
 
-export interface PathToTree {
-    path: NetworkPath;
-    node: NetworkNode;
+export interface AvailablePath {
+    pathToV: NetworkPath;
+    v: NetworkNode;
+    pathFromVToProducer: NetworkPath;
+    e2e_path: NetworkPath;
 }

@@ -12,7 +12,10 @@ export class Scenario1 implements Scenario {
     constructor() {
         this.store = new Store;
         this.networkGenerator = new ThreeNodeNetwork(this.store);
-        this.algo = new LBS();
+        this.algo = new LBS({
+            max_delay: 10,
+            max_jitter: 3
+        });
     }
 
     getStore() {
