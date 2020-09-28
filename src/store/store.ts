@@ -26,6 +26,7 @@ export class Store {
   private edgeSequence: number = 0;
   private contentTrees: ContentTrees;
   private revenue: number;
+  private duration: number;
 
   constructor() {
     this.networkNodeStore = new Cache();
@@ -127,6 +128,14 @@ export class Store {
 
   getRevenue(): number {
     return this.revenue;
+  }
+
+  setDuration(value: number) {
+    this.duration = value;
+  }
+
+  getDuration(): number {
+    return this.duration;
   }
 
   async saveToFile(filename: string) {

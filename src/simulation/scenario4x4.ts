@@ -1,12 +1,11 @@
 import { LBS } from "../algorithms";
-import { Scenario, NetworkGraph, NetworkGenerator, Algorithm } from "../model";
+import { Scenario, NetworkGraph, Algorithm } from "../model";
 import { Store, StoreSerializer } from "../store";
 import { Grid4x4Network } from "./grid-network";
 import { SimulationUtil } from "./simulationUtil";
 
 export class Scenario4x4 implements Scenario {
   private store: Store;
-  private networkGenerator: NetworkGenerator;
   private network: NetworkGraph;
   private algo: Algorithm;
 
@@ -16,7 +15,7 @@ export class Scenario4x4 implements Scenario {
     return this.store;
   }
 
-  async start(){
+  async start() {
     await this.subtask(8);
     await this.subtask(10);
     await this.subtask(12);
@@ -25,7 +24,7 @@ export class Scenario4x4 implements Scenario {
   }
   private async subtask(numberOfRequests: number) {
     this.store = new Store();
-    this.network = (new Grid4x4Network(this.store, numberOfRequests)).generate();
+    this.network = new Grid4x4Network(this.store, numberOfRequests).generate();
     this.algo = new LBS({
       max_delay: 10,
       max_jitter: 3,
@@ -36,7 +35,11 @@ export class Scenario4x4 implements Scenario {
       this.store.addVideoRequestResult(result);
     });
     this.store.setRevenue(res.revenue);
-    StoreSerializer.saveToFile(this.store, `grid4x4-${numberOfRequests}-requests.json`);
-    await SimulationUtil.printResultsToCSV(this.store);        
+    this.store.setDuration(res.duration);
+    StoreSerializer.saveToFile(
+      this.store,
+      `src/simulation/results/grid4x4-lbs-${numberOfRequests}-requests.json`
+    );
+    await SimulationUtil.printResultsToCSV(this.store);
   }
 }

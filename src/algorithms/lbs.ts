@@ -9,6 +9,7 @@ import {
   ALGORITHM,
   VideoRequest,
 } from "../model";
+import { duration } from "../utils/duration";
 import { GraphUtil } from "./utils";
 
 export interface LBSOptions {
@@ -25,6 +26,8 @@ export class LBS implements Algorithm {
       input.requests,
       input.producers
     );
+
+    const startTime = process.hrtime();
     // sort requests by layer
     let sortedRequests = _.orderBy(input.requests, ["layer"], ["asc"]);
 
@@ -149,10 +152,12 @@ export class LBS implements Algorithm {
         });
       }
     }
+
     return {
       videoRequestResult: videoRequestResults,
       contentTrees: contentTrees,
       revenue: this.revenue(videoRequestResults, input.requests),
+      duration: duration(startTime)
     };
   }
 

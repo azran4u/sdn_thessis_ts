@@ -25,6 +25,7 @@ interface StoreDTO {
   videoRequestResultStore: VideoRequestResult[];
   contentTrees: Array<{ key: string; graph: Object }>;
   revenue: number;
+  duration: number;
 }
 export class StoreSerializer {
   static serialize(store: Store): StoreDTO {
@@ -37,6 +38,7 @@ export class StoreSerializer {
       videoRequestResultStore: store.allVideoRequestsResults(),
       contentTrees: StoreSerializer.mapToDto(store.getContentTrees()),
       revenue: store.getRevenue(),
+      duration: store.getDuration(),
     };
   }
 

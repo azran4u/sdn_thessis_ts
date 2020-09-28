@@ -82,6 +82,7 @@ export class LLVS implements Algorithm {
       videoRequestResult: videoRequestResults,
       contentTrees: contentTrees,
       revenue: this.revenue(),
+      duration: 0
     };
   }
 
