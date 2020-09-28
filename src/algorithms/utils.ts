@@ -45,15 +45,15 @@ export class GraphUtil {
       return edge.latency;
     });
     const latency = +paths[dst].distance;
-    if (latency >= Number.MAX_SAFE_INTEGER) {
-      return {
-        edges: [],
-        latency: Number.MAX_SAFE_INTEGER,
-        hopCount: 0,
-        jitter: Number.MAX_SAFE_INTEGER,
-        availableBw: 0,
-      };
-    }
+    // if (latency >= Number.MAX_SAFE_INTEGER) {
+    //   return {
+    //     edges: [],
+    //     latency: Number.MAX_SAFE_INTEGER,
+    //     hopCount: 0,
+    //     jitter: Number.MAX_SAFE_INTEGER,
+    //     availableBw: 0,
+    //   };
+    // }
     let jitter = 0;
     const path: NetworkEdge[] = [];
     let node = dst;
@@ -69,6 +69,15 @@ export class GraphUtil {
       if (edge.bw < availableBw) {
         availableBw = edge.bw;
       }
+    }
+    if (path.length === 0) {
+      return {
+        edges: [],
+        latency: 0,
+        hopCount: 0,
+        availableBw: 0,
+        jitter: 0,
+      };
     }
     return {
       edges: path,
@@ -150,11 +159,11 @@ export class GraphUtil {
     _.forEach(H.edges(), (e) => {
       const edge = (H.edge(e) as any) as NetworkEdge;
       if (edge.bw < minBw) {
-        H.setEdge(edge.from_node, edge.to_node, {
-          ...edge,
-          latency: Number.MAX_SAFE_INTEGER,
-        } as NetworkEdge);
-        // H.removeEdge(e);
+        // H.setEdge(edge.from_node, edge.to_node, {
+        //   ...edge,
+        //   latency: Number.MAX_SAFE_INTEGER,
+        // } as NetworkEdge);
+        H.removeEdge(e);
       }
     });
     return H;
@@ -221,7 +230,9 @@ export class GraphUtil {
       });
 
       // add the node the producer is connected to
-      const producer = producers.find((x) => x.id === request.producer);
+      const producer = producers.find((x) => {
+        return x.id === request.producer;
+      });
       const node = producer.node;
       // g.setNode(node, input.graph.node(node));
       g.setNode(node, {

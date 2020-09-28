@@ -1,17 +1,17 @@
-id,subscriber,producer,layer,alogorithm,status,e2e_latency,e2e_jitter,e2e_hopCount
-d3f99147-29ac-4b38-b81f-a69521737714,subscriber0-0,producer0,BASE,LBS,SERVED,8,9,4
-075b656b-7df7-4974-8721-4f174e1a0a80,subscriber0-1,producer0,BASE,LBS,SERVED,12,10,5
-48e18a44-df17-4e1e-bde2-224753d6c305,subscriber0-2,producer0,BASE,LBS,SERVED,20,14,6
-25850eb9-9275-41d9-b34c-5af5fa1625e1,subscriber0-3,producer0,BASE,LBS,SERVED,26,17,7
-613ea085-c778-4807-93a7-9508b9d28a22,subscriber1-0,producer1,BASE,LBS,SERVED,3,2,2
-d37e761b-4217-4fed-be79-9448da21b4d5,subscriber1-1,producer1,BASE,LBS,SERVED,7,7,3
-b4e6635e-79a5-4ba5-828c-9d17534f81ca,subscriber1-2,producer1,BASE,LBS,SERVED,6,8,4
-30b38513-0470-4256-99cb-91b52915cec1,subscriber1-3,producer1,BASE,LBS,SERVED,7,12,5
-786be3f2-700b-49a9-969d-9db6b94bc245,subscriber2-0,producer2,BASE,LBS,SERVED,4,5,2
-c4b7b26a-1de8-4bde-a985-80ba5ccf4fdf,subscriber2-1,producer2,BASE,LBS,SERVED,7,7,3
-1a12cefd-3fa1-4cd9-904f-ea827308f487,subscriber2-2,producer2,BASE,LBS,SERVED,9,11,4
-16790106-8962-4c53-a629-44b19f1be41a,subscriber2-3,producer2,BASE,LBS,SERVED,10,13,5
-6cbe754c-1e19-4af9-b82e-0749f263ba5b,subscriber3-0,producer3,BASE,LBS,SERVED,11,8,4
-7f4f6313-c9cc-4d5d-be0b-532dd8e3448f,subscriber3-1,producer3,BASE,LBS,SERVED,12,10,5
-81af53d0-2133-4e3c-a434-7b73e55b5779,subscriber3-2,producer3,BASE,LBS,SERVED,17,11,6
-f4e5df4f-8579-4d67-8b7e-869a9ff1c0d1,subscriber3-3,producer3,BASE,LBS,SERVED,15,18,7
+id,subscriber,subscriber_node,producer,producer_node,layer,alogorithm,status,e2e_path,e2e_latency,e2e_jitter,e2e_hopCount
+2b7ae164-9163-4da9-9dcb-b430227bb3b7,subscriber-1,node1,producer-1,node4,BASE,LBS,SERVED,,3,0,3
+8bae9a88-698f-4096-adb9-4b74bbdf7f60,subscriber-2,node5,producer-2,node8,BASE,LBS,SERVED,,3,0,3
+d5c327f6-4746-4017-ab73-beaba98bf484,subscriber-3,node9,producer-3,node12,BASE,LBS,SERVED,,3,0,3
+058eb6e9-4d26-46cc-8cc2-72d424318a0a,subscriber-4,node13,producer-4,node16,BASE,LBS,SERVED,,3,0,3
+95cbdc54-9597-46ef-87d3-105787b562ff,subscriber-5,node2,producer-1,node4,BASE,LBS,SERVED,,2,0,2
+d33deda5-14f1-412b-9068-e304270b25ac,subscriber-6,node6,producer-2,node8,BASE,LBS,SERVED,,2,0,2
+a5274344-e53c-4731-9313-6404a65ce6c6,subscriber-1,node1,producer-1,node4,EL1,LBS,REJECTED,-1,-1,-1,-1
+7d4d7e97-449f-4568-b632-ec14541f551a,subscriber-2,node5,producer-2,node8,EL1,LBS,SERVED,,5,0,5
+103f9cf4-f126-4fba-8b3d-06930e820e55,subscriber-3,node9,producer-3,node12,EL1,LBS,REJECTED,-1,-1,-1,-1
+b9004910-38dd-4e1c-a11a-323e9b7e3b71,subscriber-4,node13,producer-4,node16,EL1,LBS,REJECTED,-1,-1,-1,-1
+e40e8589-c433-4fcd-a527-774cdf3750c3,subscriber-5,node2,producer-1,node4,EL1,LBS,REJECTED,-1,-1,-1,-1
+afa085e8-c562-479e-9d83-453df58f1124,subscriber-6,node6,producer-2,node8,EL1,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
+10969309-09f3-47d5-8ee9-76766243ce01,subscriber-1,node1,producer-2,node8,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
+21e1e71b-0d35-4d49-9342-e986bd69a6ef,subscriber-2,node5,producer-3,node12,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
+5e4e7d12-c764-4a4a-ab02-3a58c3b34339,subscriber-3,node9,producer-4,node16,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
+aeb12c3d-a747-4367-8315-ea37e6f7e605,subscriber-4,node13,producer-1,node4,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]",6,0,6

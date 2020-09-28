@@ -91,6 +91,7 @@ export type ContentTrees = Map<string, graphlib.Graph>;
 export interface AlgorithmOutput {
     videoRequestResult: VideoRequestResultInput[];
     contentTrees: ContentTrees;
+    revenue: number;
 }
 
 export interface Content {

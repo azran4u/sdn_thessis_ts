@@ -7,6 +7,7 @@ import {
   VideoRequestResultInput,
   AvailablePath,
   ALGORITHM,
+  VideoRequest,
 } from "../model";
 import { GraphUtil } from "./utils";
 
@@ -151,6 +152,7 @@ export class LBS implements Algorithm {
     return {
       videoRequestResult: videoRequestResults,
       contentTrees: contentTrees,
+      revenue: this.revenue(videoRequestResults, input.requests),
     };
   }
 
@@ -180,5 +182,31 @@ export class LBS implements Algorithm {
 
     // select random path
     return maxAvialableBwPaths[0];
+  }
+
+  private revenue(
+    videoRequestResults: VideoRequestResultInput[],
+    requests: VideoRequest[]
+  ) {
+    const w1 = 8;
+    const w2 = 1;
+    const w3 = 0;
+    const sum = w1 + w2 + w3;
+    return videoRequestResults.reduce((totalRevenue, result) => {
+      const request = requests.find((req) => {
+        return req.id === result.videoRequestId;
+      });
+      if (result.status === "SERVED") {
+        if (request.layer === "BASE") {
+          return totalRevenue + w1 / sum;
+        } else if (request.layer === "EL1") {
+          return totalRevenue + w2 / sum;
+        } else if (request.layer === "EL2") {
+          return totalRevenue + w3 / sum;
+        }
+      } else {
+        return totalRevenue;
+      }
+    }, 0);
   }
 }

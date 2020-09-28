@@ -81,6 +81,7 @@ export class LLVS implements Algorithm {
     return {
       videoRequestResult: videoRequestResults,
       contentTrees: contentTrees,
+      revenue: this.revenue(),
     };
   }
 
@@ -128,5 +129,9 @@ export class LLVS implements Algorithm {
       ...silver_el,
       ...bronze_el,
     ];
+  }
+
+  private revenue() {
+    return 0;
   }
 }

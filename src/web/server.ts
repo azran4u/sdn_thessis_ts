@@ -9,7 +9,7 @@ export class WebServer {
         this.formatter = new D3Formatter(this.store);
     }
 
-    run() {
+    async run() {
         const app = express()
         const port = 80
 

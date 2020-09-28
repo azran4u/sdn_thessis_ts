@@ -1,12 +1,18 @@
-import { NetworkGenerator, NetworkGraph, NetworkNode } from "../model";
+import {
+  EntityId,
+  LAYER,
+  NetworkGenerator,
+  NetworkGraph,
+  NetworkNode,
+  SUBSCRIBER_PRIORITY,
+} from "../model";
 import { buildNetwork } from "../graph/networkGraph";
 import { Store } from "../store";
-import { GraphUtil } from "../algorithms/utils";
 
 export class Grid4x4Network extends NetworkGenerator {
   private numOfNodes: number;
-  private n = 100;
-  constructor(store: Store) {
+  private n = 4;
+  constructor(store: Store, private numberOfRequests: number) {
     super(store);
     this.numOfNodes = this.n * this.n;
   }
@@ -72,10 +78,10 @@ export class Grid4x4Network extends NetworkGenerator {
       }
     }
 
-    const producerNodes = ["node1", "node5", "node15", "node16"];
+    const producerNodes = ["node4", "node8", "node12", "node16"];
     producerNodes.forEach((producerNode, index) => {
       this.store.addProducer({
-        id: `producer-${index}`,
+        id: `producer-${index+1}`,
         node: nodes.find((node) => {
           return node.id === producerNode;
         }).id,
@@ -85,39 +91,57 @@ export class Grid4x4Network extends NetworkGenerator {
       });
     });
 
-    const subscriberNodes = [
-      "node4",
-      "node8",
-      "node10",
-      "node11",
-      "node12",
-      "node13",
+    const subscriberNodes: Array<{
+      node: string;
+      priority: SUBSCRIBER_PRIORITY;
+    }> = [
+      { node: "node1", priority: "GOLD" },
+      { node: "node5", priority: "GOLD" },
+      { node: "node9", priority: "GOLD" },
+      { node: "node13", priority: "GOLD" },
+      { node: "node2", priority: "GOLD" },
+      { node: "node6", priority: "GOLD" },
     ];
     subscriberNodes.forEach((subscriberNode, index) => {
-      const allProducers = this.store.allProducers();
-      const numOfPrducers = allProducers.length;
-      const producer = allProducers[index % numOfPrducers];
-
-      const subscriber = this.store.addSubscriber({
-        id: `subscriber-${index}`,
+      this.store.addSubscriber({
+        id: `subscriber-${index+1}`,
         node: nodes.find((node) => {
-          return node.id === subscriberNode;
+          return node.id === subscriberNode.node;
         }).id,
-        priority: GraphUtil.isOdd(index) ? "GOLD" : "SILVER",
-      });
-
-      const videoRequest1 = this.store.addVideoRequest({
-        producer: producer.id,
-        subscriber: subscriber.id,
-        layer: "BASE",
-      });
-
-      const videoRequest2 = this.store.addVideoRequest({
-        producer: producer.id,
-        subscriber: subscriber.id,
-        layer: "EL1",
+        priority: subscriberNode.priority,
       });
     });
+
+    const videoRequests: Array<{
+      subscriber: EntityId;
+      producer: EntityId;
+      layer: LAYER;
+    }> = [
+      { subscriber: "subscriber-1", producer: "producer-1", layer: "BASE" },
+      { subscriber: "subscriber-2", producer: "producer-2", layer: "BASE" },
+      { subscriber: "subscriber-3", producer: "producer-3", layer: "BASE" },
+      { subscriber: "subscriber-4", producer: "producer-4", layer: "BASE" },
+      { subscriber: "subscriber-5", producer: "producer-1", layer: "BASE" },
+      { subscriber: "subscriber-6", producer: "producer-2", layer: "BASE" },
+
+      { subscriber: "subscriber-1", producer: "producer-1", layer: "EL1" },
+      { subscriber: "subscriber-2", producer: "producer-2", layer: "EL1" },
+      { subscriber: "subscriber-3", producer: "producer-3", layer: "EL1" },
+      { subscriber: "subscriber-4", producer: "producer-4", layer: "EL1" },
+      { subscriber: "subscriber-5", producer: "producer-1", layer: "EL1" },
+      { subscriber: "subscriber-6", producer: "producer-2", layer: "EL1" },
+
+      { subscriber: "subscriber-1", producer: "producer-2", layer: "BASE" },
+      { subscriber: "subscriber-2", producer: "producer-3", layer: "BASE" },
+      { subscriber: "subscriber-3", producer: "producer-4", layer: "BASE" },
+      { subscriber: "subscriber-4", producer: "producer-1", layer: "BASE" },
+    ];
+
+    for (let i = 0; i < this.numberOfRequests; i++) {
+      const request = videoRequests[i];
+      this.store.addVideoRequest(request);
+    }
+
     const g = buildNetwork(this.store.allNodes(), this.store.allEdges());
     const producers = this.store.allProducers();
     const subscribers = this.store.allSubscribers();

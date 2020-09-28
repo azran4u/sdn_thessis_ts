@@ -1,6 +1,6 @@
 import * as chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { Scenario2 } from "../simulation";
+import { Scenario4x4 } from "../simulation";
 import { WebServer } from "../web";
 
 chai.use(chaiAsPromised);
@@ -12,9 +12,9 @@ describe("alg", async () => {
   beforeEach(async function () {});
   afterEach(async function () {});
   it("lbs", async () => {
-    const scenario = new Scenario2();
+    const scenario = new Scenario4x4();
     await scenario.start();
     const server = new WebServer(scenario.getStore());
-    server.run();
+    await server.run();
   });
 });
