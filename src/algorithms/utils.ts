@@ -45,15 +45,6 @@ export class GraphUtil {
       return edge.latency;
     });
     const latency = +paths[dst].distance;
-    // if (latency >= Number.MAX_SAFE_INTEGER) {
-    //   return {
-    //     edges: [],
-    //     latency: Number.MAX_SAFE_INTEGER,
-    //     hopCount: 0,
-    //     jitter: Number.MAX_SAFE_INTEGER,
-    //     availableBw: 0,
-    //   };
-    // }
     let jitter = 0;
     const path: NetworkEdge[] = [];
     let node = dst;

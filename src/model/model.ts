@@ -106,8 +106,14 @@ export abstract class NetworkGenerator {
   abstract generate(): NetworkGraph;
 }
 
-export interface Algorithm {
-  run(input: NetworkGraph): AlgorithmOutput;
+export interface AlgorithmOptions {
+  max_delay: number;
+  max_jitter: number;
+}
+
+export abstract class Algorithm {
+  constructor(protected options: AlgorithmOptions) {}
+  abstract run(input: NetworkGraph): AlgorithmOutput;
 }
 
 export interface Scenario {

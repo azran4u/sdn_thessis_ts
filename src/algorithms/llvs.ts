@@ -1,51 +1,39 @@
 import _ from "lodash";
-import * as graphlib from "graphlib";
 import {
   Algorithm,
   AlgorithmOutput,
   VIDEO_REQUEST_STATUS,
   NetworkGraph,
-  ContentTreeNetworkNode,
   VideoRequestResultInput,
-  NetworkNode,
   VideoRequest,
+  AlgorithmOptions,
+  NetworkPath,
 } from "../model";
 import { GraphUtil } from "./utils";
+import { duration } from "../utils/duration";
 
+interface LLVSOptions extends AlgorithmOptions {
+  input: NetworkGraph;
+}
 // starts from empty network and assigns requests by revenue
 // may stop serving currently served requests
-export class LLVS implements Algorithm {
-  constructor(private input: NetworkGraph) {}
+export class LLVS extends Algorithm {
+  private input: NetworkGraph;
+  constructor(options: LLVSOptions) {
+    super({ max_delay: options.max_delay, max_jitter: options.max_jitter });
+    this.input = options.input;
+  }
   run(): AlgorithmOutput {
-    const contentTrees = new Map<string, graphlib.Graph>();
-
     const videoRequestResults: VideoRequestResultInput[] = [];
 
-    // init the map with empty graph for each content
-    for (const request of this.input.requests) {
-      const g = new graphlib.Graph({
-        directed: true,
-        multigraph: false, // tree isn't multigraph
-        compound: false,
-      });
+    // init content trees
+    const contentTrees = GraphUtil.initContentTress(
+      this.input.graph,
+      this.input.requests,
+      this.input.producers
+    );
 
-      // add the node the producer is connected to
-      const producer = this.input.producers.find(
-        (x) => x.id === request.producer
-      );
-      const node = producer.node;
-      // g.setNode(node, input.graph.node(node));
-      g.setNode(node, {
-        id: this.input.graph.node(node),
-        e2e_hopCount: 1,
-        e2e_latency: 0,
-        e2e_jitter: 0,
-      } as ContentTreeNetworkNode);
-      contentTrees.set(
-        GraphUtil.contentToKey(request.producer, request.layer),
-        g
-      );
-    }
+    const startTime = process.hrtime();
 
     let sortedRequests = this.sortRequestsByExpectedRevenue();
 
@@ -54,7 +42,10 @@ export class LLVS implements Algorithm {
         (x) => x.videoRequestId === request.id
       );
 
-      if (result && result.status === VIDEO_REQUEST_STATUS.REJECTED) {
+      if (
+        (result && result.status === VIDEO_REQUEST_STATUS.SERVED) ||
+        (result && result.status === VIDEO_REQUEST_STATUS.REJECTED)
+      ) {
         continue;
       }
 
@@ -73,19 +64,23 @@ export class LLVS implements Algorithm {
       );
 
       const path = GraphUtil.dijkstra(H, producer.node, subscriber.node);
-      if (path && GraphUtil.isValidPath(path)) {
+      if (this.isValidPath(path)) {
         // path exists and valid
       } else {
       }
     }
+
     return {
       videoRequestResult: videoRequestResults,
       contentTrees: contentTrees,
       revenue: this.revenue(),
-      duration: 0
+      duration: duration(startTime),
     };
   }
 
+  private isValidPath(path: NetworkPath): boolean {
+    return true;
+  }
   private setRequestAsRejected(request: VideoRequest) {}
   private sortRequestsByExpectedRevenue(): VideoRequest[] {
     const gold_bl: VideoRequest[] = [];

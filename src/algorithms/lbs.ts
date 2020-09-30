@@ -8,16 +8,15 @@ import {
   AvailablePath,
   ALGORITHM,
   VideoRequest,
+  AlgorithmOptions,
 } from "../model";
 import { duration } from "../utils/duration";
 import { GraphUtil } from "./utils";
 
-export interface LBSOptions {
-  max_delay: number;
-  max_jitter: number;
-}
-export class LBS implements Algorithm {
-  constructor(private options: LBSOptions) {}
+export class LBS extends Algorithm {
+  constructor(options: AlgorithmOptions) {
+    super(options);
+  }
   run(input: NetworkGraph): AlgorithmOutput {
     const videoRequestResults: VideoRequestResultInput[] = [];
     // create content tress
@@ -157,7 +156,7 @@ export class LBS implements Algorithm {
       videoRequestResult: videoRequestResults,
       contentTrees: contentTrees,
       revenue: this.revenue(videoRequestResults, input.requests),
-      duration: duration(startTime)
+      duration: duration(startTime),
     };
   }
 
@@ -192,7 +191,7 @@ export class LBS implements Algorithm {
   private revenue(
     videoRequestResults: VideoRequestResultInput[],
     requests: VideoRequest[]
-  ) {
+  ): number {
     const w1 = 8;
     const w2 = 1;
     const w3 = 0;
@@ -201,7 +200,7 @@ export class LBS implements Algorithm {
       const request = requests.find((req) => {
         return req.id === result.videoRequestId;
       });
-      if (result.status === "SERVED") {
+      if (result.status === VIDEO_REQUEST_STATUS.SERVED) {
         if (request.layer === "BASE") {
           return totalRevenue + w1 / sum;
         } else if (request.layer === "EL1") {
