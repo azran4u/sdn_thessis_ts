@@ -27,6 +27,7 @@ export class Scenario4x4 implements Scenario {
     const algo = new LBS({
       max_delay: 10,
       max_jitter: 3,
+      w: [8, 1, 0],
     });
     const algoRes = algo.run(network);
     store.setContentTrees(algoRes.contentTrees);
@@ -49,6 +50,7 @@ export class Scenario4x4 implements Scenario {
       max_delay: 10,
       max_jitter: 3,
       input: network,
+      w: [8, 1, 0, 0, 0, 0, 0, 0, 0],
     });
     const algoRes = algo.run();
     store.setContentTrees(algoRes.contentTrees);

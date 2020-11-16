@@ -108,6 +108,7 @@ export abstract class NetworkGenerator {
 export interface AlgorithmOptions {
   max_delay: number;
   max_jitter: number;
+  w: number[];
 }
 
 export abstract class Algorithm {

@@ -192,9 +192,7 @@ export class LBS extends Algorithm {
     videoRequestResults: VideoRequestResultInput[],
     requests: VideoRequest[]
   ): number {
-    const w1 = 8;
-    const w2 = 1;
-    const w3 = 0;
+    const [w1, w2, w3] = this.options.w;
     const sum = w1 + w2 + w3;
     return videoRequestResults.reduce((totalRevenue, result) => {
       const request = requests.find((req) => {

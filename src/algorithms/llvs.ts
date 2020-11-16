@@ -22,9 +22,11 @@ interface LLVSOptions extends AlgorithmOptions {
 // may stop serving currently served requests
 export class LLVS extends Algorithm {
   private input: NetworkGraph;
+  private w: number[];
   constructor(options: LLVSOptions) {
-    super({ max_delay: options.max_delay, max_jitter: options.max_jitter });
+    super({ max_delay: options.max_delay, max_jitter: options.max_jitter, w: options.w });
     this.input = options.input;
+    this.w = options.w;
   }
   run(): AlgorithmOutput {
     const videoRequestResults: VideoRequestResultInput[] = [];
@@ -220,15 +222,7 @@ export class LLVS extends Algorithm {
     subscribers: Subscriber[],
     producers: Producer[]
   ): number {
-    const w1 = 8;
-    const w2 = 1;
-    const w3 = 0;
-    const w4 = 0;
-    const w5 = 0;
-    const w6 = 0;
-    const w7 = 0;
-    const w8 = 0;
-    const w9 = 0;
+    const [w1, w2, w3, w4, w5, w6, w7, w8, w9] = this.w;
     return videoRequestResults.reduce((totalRevenue, result) => {
       const request = requests.find((req) => {
         return req.id === result.videoRequestId;
