@@ -1,17 +1,17 @@
 id,subscriber,subscriber_node,producer,producer_node,layer,alogorithm,status,e2e_path,e2e_latency,e2e_jitter,e2e_hopCount
-c23eeff4-7d0d-486c-a090-dd36e24d215a,subscriber-1,node1,producer-1,node4,BASE,LBS,SERVED,,3,0,3
-facddde0-be47-4991-845e-405759bb1b58,subscriber-2,node5,producer-2,node8,BASE,LBS,SERVED,,3,0,3
-830fb88f-d0a6-4ec6-b5cb-bacf76e0b5c4,subscriber-3,node9,producer-3,node12,BASE,LBS,SERVED,,3,0,3
-d03ee33a-d48c-41e8-939a-743bcad1b3a0,subscriber-4,node13,producer-4,node16,BASE,LBS,SERVED,,3,0,3
-18edd1ba-0a86-4f89-9dc5-095778ee4e17,subscriber-5,node2,producer-1,node4,BASE,LBS,SERVED,,2,0,2
-9fd4a65c-8447-4eca-9f48-f7fb8f5365d3,subscriber-6,node6,producer-2,node8,BASE,LBS,SERVED,,2,0,2
-16c30443-f6e4-4e7a-894b-0fb5e33a43a5,subscriber-1,node1,producer-1,node4,EL1,LBS,REJECTED,-1,-1,-1,-1
-f0c30294-e758-48fa-ba29-2f2ad5f99e28,subscriber-2,node5,producer-2,node8,EL1,LBS,SERVED,,5,0,5
-1ad8eae3-ff9c-4e34-af0f-a5d96757093b,subscriber-3,node9,producer-3,node12,EL1,LBS,REJECTED,-1,-1,-1,-1
-4291f748-9729-4c50-8491-bb47307807ee,subscriber-4,node13,producer-4,node16,EL1,LBS,REJECTED,-1,-1,-1,-1
-afa48fbb-7dac-40c2-99c3-c0bba47114f5,subscriber-5,node2,producer-1,node4,EL1,LBS,REJECTED,-1,-1,-1,-1
-65aa81b4-1bac-467c-af94-6e3a2027a475,subscriber-6,node6,producer-2,node8,EL1,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
-791d73ca-45f4-44ff-bc45-f90bd5b52544,subscriber-1,node1,producer-2,node8,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
-a5c7286a-968a-4998-981f-6c56da52dbf8,subscriber-2,node5,producer-3,node12,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
-90047356-77f2-4d98-a941-f3ef766975db,subscriber-3,node9,producer-4,node16,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
-01812644-30c2-494b-998f-34bef01a4ede,subscriber-4,node13,producer-1,node4,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]",6,0,6
+51b8c835-fa82-486b-ac7f-a5f482fc357e,subscriber-1,node1,producer-1,node4,BASE,LBS,SERVED,,3,0,3
+54a98393-c1fc-4dbb-8b9d-de3336c6160c,subscriber-2,node5,producer-2,node8,BASE,LBS,SERVED,,3,0,3
+b58f1bea-e303-44f1-bb4a-5467b1ceb8b3,subscriber-3,node9,producer-3,node12,BASE,LBS,SERVED,,3,0,3
+879bbf36-84d5-4078-9988-9d176ccb7b2a,subscriber-4,node13,producer-4,node16,BASE,LBS,SERVED,,3,0,3
+b0268fc3-f3c6-4535-b824-1fac86ae0cbd,subscriber-5,node2,producer-1,node4,BASE,LBS,SERVED,,2,0,2
+98eb2ae3-2933-4e5f-9216-0c41868c9e7c,subscriber-6,node6,producer-2,node8,BASE,LBS,SERVED,,2,0,2
+e71c74de-bc15-46ed-b4bc-0c6dc9046dbc,subscriber-1,node1,producer-1,node4,EL1,LBS,REJECTED,-1,-1,-1,-1
+778b9eb1-12fa-4d52-9d26-3510be33924e,subscriber-2,node5,producer-2,node8,EL1,LBS,SERVED,,5,0,5
+9e39a573-2301-4cfc-aa9d-69bbf9766121,subscriber-3,node9,producer-3,node12,EL1,LBS,REJECTED,-1,-1,-1,-1
+05412aec-4f75-46af-a16a-c7f299a924e0,subscriber-4,node13,producer-4,node16,EL1,LBS,REJECTED,-1,-1,-1,-1
+06f358d9-bafc-4e59-9512-a3c3ed2395a7,subscriber-5,node2,producer-1,node4,EL1,LBS,REJECTED,-1,-1,-1,-1
+8144edeb-3bdf-46fe-9f4e-24e60c0708f0,subscriber-6,node6,producer-2,node8,EL1,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
+7a6acfa3-012e-4590-bc46-1fd356eb3f12,subscriber-1,node1,producer-2,node8,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
+d4fd6e45-a033-41b8-bd73-0bb53eac4054,subscriber-2,node5,producer-3,node12,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
+87094532-19bd-4457-85a9-8c10e6f867f4,subscriber-3,node9,producer-4,node16,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object]",4,0,4
+324fd1b0-2f2e-41f4-8e4c-9624bd639545,subscriber-4,node13,producer-1,node4,BASE,LBS,SERVED,"[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]",6,0,6

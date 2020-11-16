@@ -177,35 +177,81 @@ export class GraphUtil {
     return G;
   }
 
-  static addPathToTree(
-    pathToGraph: AvailablePath,
+  static mergePathIntoTree(
+    edges: NetworkEdge[],
     G: graphlib.Graph
   ): graphlib.Graph {
-    let currentNode = pathToGraph.v;
-    const edges = pathToGraph.pathToV.edges;
-    while (edges.length > 0) {
-      const currentEdgeIndex = edges.findIndex((edge) => {
-        return edge.from_node === currentNode.id;
+    if (edges.length === 0) return G;
+
+    if (G.nodes().length === 0) {
+      edges.forEach((edge) => {
+        G.setEdge({ v: edge.from_node, w: edge.to_node });
       });
-      if (currentEdgeIndex === -1) {
-        // not found
-        throw new Error(`addPathToTree error`);
+      return G;
+    }
+
+    // find intersection node with tree
+    const nodes = G.nodes();
+    let intersectionEdgeIndex = -1;
+    for (let i = edges.length - 1; i >= 0; i--) {
+      const edge = edges[i];
+      const node = nodes.find((node) => {
+        return node === edge.from_node;
+      });
+      if (node) {
+        intersectionEdgeIndex = i;
+        break;
       }
-      const currentEdge = edges[currentEdgeIndex];
-      const fromNode: ContentTreeNetworkNode = G.node(currentEdge.from_node);
-      const toNode: NetworkNode = { id: currentEdge.to_node };
-      G.setNode(currentEdge.to_node, {
+    }
+
+    if (intersectionEdgeIndex === -1)
+      throw new Error(`can't find intersection edge`);
+
+    for (let i = intersectionEdgeIndex; i < edges.length; i++) {
+      const edge = edges[i];
+
+      const fromNode: ContentTreeNetworkNode = G.node(edge.from_node);
+      const toNode: NetworkNode = { id: edge.to_node };
+      G.setNode(edge.to_node, {
         ...toNode,
         e2e_hopCount: fromNode.e2e_hopCount + 1,
-        e2e_latency: fromNode.e2e_latency + currentEdge.latency,
-        e2e_jitter: fromNode.e2e_jitter + currentEdge.jitter,
+        e2e_latency: fromNode.e2e_latency + edge.latency,
+        e2e_jitter: fromNode.e2e_jitter + edge.jitter,
       } as ContentTreeNetworkNode);
-      G.setEdge(currentEdge.from_node, currentEdge.to_node, currentEdge);
-      edges.splice(currentEdgeIndex, 1);
-      currentNode = toNode;
+
+      G.setEdge(edge.from_node, edge.to_node, edge);
     }
     return G;
   }
+  // static addPathToTree(
+  //   pathToGraph: AvailablePath,
+  //   G: graphlib.Graph
+  // ): graphlib.Graph {
+  //   let currentNode = pathToGraph.v;
+  //   const edges = pathToGraph.pathToV.edges;
+  //   while (edges.length > 0) {
+  //     const currentEdgeIndex = edges.findIndex((edge) => {
+  //       return edge.from_node === currentNode.id;
+  //     });
+  //     if (currentEdgeIndex === -1) {
+  //       // not found
+  //       throw new Error(`addPathToTree error`);
+  //     }
+  //     const currentEdge = edges[currentEdgeIndex];
+  //     const fromNode: ContentTreeNetworkNode = G.node(currentEdge.from_node);
+  //     const toNode: NetworkNode = { id: currentEdge.to_node };
+  //     G.setNode(currentEdge.to_node, {
+  //       ...toNode,
+  //       e2e_hopCount: fromNode.e2e_hopCount + 1,
+  //       e2e_latency: fromNode.e2e_latency + currentEdge.latency,
+  //       e2e_jitter: fromNode.e2e_jitter + currentEdge.jitter,
+  //     } as ContentTreeNetworkNode);
+  //     G.setEdge(currentEdge.from_node, currentEdge.to_node, currentEdge);
+  //     edges.splice(currentEdgeIndex, 1);
+  //     currentNode = toNode;
+  //   }
+  //   return G;
+  // }
 
   static initContentTress(
     graph: graphlib.Graph,

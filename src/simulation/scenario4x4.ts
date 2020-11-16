@@ -1,45 +1,67 @@
 import { LBS } from "../algorithms";
-import { Scenario, NetworkGraph, Algorithm } from "../model";
+import { LLVS } from "../algorithms/llvs";
+import { Scenario } from "../model";
 import { Store, StoreSerializer } from "../store";
 import { Grid4x4Network } from "./grid-network";
 import { SimulationUtil } from "./simulationUtil";
 
 export class Scenario4x4 implements Scenario {
-  private store: Store;
-  private network: NetworkGraph;
-  private algo: Algorithm;
-
   constructor() {}
 
-  getStore() {
-    return this.store;
-  }
-
   async start() {
-    await this.subtask(8);
-    await this.subtask(10);
-    await this.subtask(12);
-    await this.subtask(14);
-    await this.subtask(16);
+    // await this.lbsRun(8);
+    // await this.lbsRun(10);
+    // await this.lbsRun(12);
+    // await this.lbsRun(14);
+    // await this.lbsRun(16);
+
+    await this.llvsRun(8);
+    await this.llvsRun(10);
+    await this.llvsRun(12);
+    await this.llvsRun(14);
+    await this.llvsRun(16);
   }
-  private async subtask(numberOfRequests: number) {
-    this.store = new Store();
-    this.network = new Grid4x4Network(this.store, numberOfRequests).generate();
-    this.algo = new LBS({
+  private async lbsRun(numberOfRequests: number) {
+    const store = new Store();
+    const network = new Grid4x4Network(store, numberOfRequests).generate();
+    const algo = new LBS({
       max_delay: 10,
       max_jitter: 3,
     });
-    const res = this.algo.run(this.network);
-    this.store.setContentTrees(res.contentTrees);
-    res.videoRequestResult.forEach((result) => {
-      this.store.addVideoRequestResult(result);
+    const algoRes = algo.run(network);
+    store.setContentTrees(algoRes.contentTrees);
+    algoRes.videoRequestResult.forEach((result) => {
+      store.addVideoRequestResult(result);
     });
-    this.store.setRevenue(res.revenue);
-    this.store.setDuration(res.duration);
+    store.setRevenue(algoRes.revenue);
+    store.setDuration(algoRes.duration);
     StoreSerializer.saveToFile(
-      this.store,
+      store,
       `src/simulation/results/grid4x4-lbs-${numberOfRequests}-requests.json`
     );
-    await SimulationUtil.printResultsToCSV(this.store);
+    await SimulationUtil.printResultsToCSV(store);
+  }
+
+  private async llvsRun(numberOfRequests: number) {
+    const store = new Store();
+    const network = new Grid4x4Network(store, numberOfRequests).generate();
+    const algo = new LLVS({
+      max_delay: 10,
+      max_jitter: 3,
+      input: network,
+    });
+    const algoRes = algo.run();
+    store.setContentTrees(algoRes.contentTrees);
+    algoRes.videoRequestResult.forEach((result) => {
+      store.addVideoRequestResult(result);
+    });
+    store.setRevenue(algoRes.revenue);
+    store.setDuration(algoRes.duration);
+    StoreSerializer.saveToFile(
+      store,
+      `src/simulation/results/grid4x4-llvs-${numberOfRequests}-requests.json`
+    );
+    debugger;
+    await SimulationUtil.printResultsToCSV(store);
   }
 }

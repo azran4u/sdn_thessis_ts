@@ -1,5 +1,4 @@
 import * as graphlib from "graphlib";
-import { NumericDictionary } from "lodash";
 import { Store } from "../store";
 
 export type EntityId = string;

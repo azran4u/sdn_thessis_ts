@@ -14,7 +14,7 @@ describe("alg", async () => {
   it("lbs", async () => {
     const scenario = new Scenario4x4();
     await scenario.start();
-    const server = new WebServer(scenario.getStore());
-    await server.run();
+    // const server = new WebServer(scenario.getStore());
+    // await server.run();
   });
 });

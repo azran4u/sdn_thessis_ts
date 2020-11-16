@@ -69,10 +69,10 @@ export class LBS extends Algorithm {
         const pathFromVToProducer = GraphUtil.dijkstra(tree, producer.node, v);
         const e2e_path = GraphUtil.joinPaths(pathToV, pathFromVToProducer);
 
-        // check if path is valid - max latency constraint
+        // check latency constraint
         if (e2e_path.latency > this.options.max_delay) continue;
 
-        // check decodable time constraint
+        // check jitter constraint
         if (request.layer != "BASE") {
           const baseLayerRequest = input.requests.find((req) => {
             return (
@@ -136,7 +136,7 @@ export class LBS extends Algorithm {
         );
 
         // update content tree
-        tree = GraphUtil.addPathToTree(bestPath, tree);
+        tree = GraphUtil.mergePathIntoTree(bestPath.e2e_path.edges, tree);
         contentTrees.set(
           GraphUtil.contentToKey(request.producer, request.layer),
           tree
