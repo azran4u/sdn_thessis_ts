@@ -11,7 +11,7 @@ describe("alg", async () => {
   after(async function () {});
   beforeEach(async function () {});
   afterEach(async function () {});
-  it("lbs", async () => {
+  it.only("4x4", async () => {
     const scenario = new Scenario4x4();
     await scenario.start();
     // const server = new WebServer(scenario.getStore());

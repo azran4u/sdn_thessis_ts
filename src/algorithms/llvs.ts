@@ -9,6 +9,8 @@ import {
   AlgorithmOptions,
   NetworkPath,
   ALGORITHM,
+  Subscriber,
+  Producer,
 } from "../model";
 import { GraphUtil } from "./utils";
 import { duration } from "../utils/duration";
@@ -64,7 +66,9 @@ export class LLVS extends Algorithm {
         requestBw
       );
 
+      // find shortest path from producer to subscriber
       const path = GraphUtil.dijkstra(H, producer.node, subscriber.node);
+
       if (this.isValidPath(path, request, videoRequestResults)) {
         // update G
         this.input.graph = GraphUtil.updatePathBwInGraph(
@@ -93,13 +97,39 @@ export class LLVS extends Algorithm {
           e2e_path: path,
         });
       } else {
+        // update video request results
+        videoRequestResults.push({
+          alogorithm: ALGORITHM.LLVS,
+          videoRequestId: request.id,
+          status: VIDEO_REQUEST_STATUS.REJECTED,
+          e2e_path: null,
+        });
+
+        // set upper layer requests INVALID
+        const higherLayerRequests = GraphUtil.findHigherLayerRequests(
+          sortedRequests,
+          request
+        );
+        higherLayerRequests.forEach((req) => {
+          videoRequestResults.push({
+            alogorithm: ALGORITHM.LLVS,
+            videoRequestId: req.id,
+            status: VIDEO_REQUEST_STATUS.REJECTED,
+            e2e_path: null,
+          });
+        });
       }
     }
 
     return {
       videoRequestResult: videoRequestResults,
       contentTrees: contentTrees,
-      revenue: this.revenue(),
+      revenue: this.revenue(
+        videoRequestResults,
+        this.input.requests,
+        this.input.subscribers,
+        this.input.producers
+      ),
       duration: duration(startTime),
     };
   }
@@ -136,7 +166,6 @@ export class LLVS extends Algorithm {
     return true;
   }
 
-  private setRequestAsRejected(request: VideoRequest) {}
   private sortRequestsByExpectedRevenue(): VideoRequest[] {
     const gold_bl: VideoRequest[] = [];
     const silver_bl: VideoRequest[] = [];
@@ -182,7 +211,72 @@ export class LLVS extends Algorithm {
     ];
   }
 
-  private revenue() {
-    return 0;
+  private revenue(
+    videoRequestResults: VideoRequestResultInput[],
+    requests: VideoRequest[],
+    subscribers: Subscriber[],
+    producers: Producer[]
+  ): number {
+    const w1 = 8;
+    const w2 = 1;
+    const w3 = 0;
+    const w4 = 0;
+    const w5 = 0;
+    const w6 = 0;
+    const w7 = 0;
+    const w8 = 0;
+    const w9 = 0;
+    return videoRequestResults.reduce((totalRevenue, result) => {
+      const request = requests.find((req) => {
+        return req.id === result.videoRequestId;
+      });
+      const subscriber = subscribers.find((subscriber) => {
+        return subscriber.id === request.subscriber;
+      });
+      const producer = producers.find((producer) => {
+        return producer.id === request.producer;
+      });
+      if (result.status === VIDEO_REQUEST_STATUS.SERVED) {
+        if (request.layer === "BASE" && subscriber.priority === "GOLD") {
+          return totalRevenue + producer.base_layer_bw * w1;
+        } else if (
+          request.layer === "BASE" &&
+          subscriber.priority === "SILVER"
+        ) {
+          return totalRevenue + producer.base_layer_bw * w2;
+        } else if (request.layer === "EL1" && subscriber.priority === "GOLD") {
+          return totalRevenue + producer.enhancement_layer_1_bw * w3;
+        } else if (
+          request.layer === "BASE" &&
+          subscriber.priority === "BRONZE"
+        ) {
+          return totalRevenue + producer.base_layer_bw * w4;
+        } else if (
+          request.layer === "EL1" &&
+          subscriber.priority === "SILVER"
+        ) {
+          return totalRevenue + producer.enhancement_layer_1_bw * w5;
+        } else if (request.layer === "EL2" && subscriber.priority === "GOLD") {
+          return totalRevenue + producer.enhancement_layer_2_bw * w6;
+        } else if (
+          request.layer === "EL1" &&
+          subscriber.priority === "BRONZE"
+        ) {
+          return totalRevenue + producer.enhancement_layer_1_bw * w7;
+        } else if (
+          request.layer === "EL2" &&
+          subscriber.priority === "SILVER"
+        ) {
+          return totalRevenue + producer.enhancement_layer_2_bw * w8;
+        } else if (
+          request.layer === "EL2" &&
+          subscriber.priority === "BRONZE"
+        ) {
+          return totalRevenue + producer.enhancement_layer_2_bw * w9;
+        }
+      } else {
+        return totalRevenue;
+      }
+    }, 0);
   }
 }

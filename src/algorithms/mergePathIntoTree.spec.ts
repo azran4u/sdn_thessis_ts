@@ -8,7 +8,7 @@ import * as graphlib from "graphlib";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe.only("mergePathIntoTree", async () => {
+describe("mergePathIntoTree", async () => {
   function buildEdge(id: string, from: string, to: string): NetworkEdge {
     return {
       from_node: from,
