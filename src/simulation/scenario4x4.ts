@@ -9,11 +9,11 @@ export class Scenario4x4 implements Scenario {
   constructor() {}
 
   async start() {
-    // await this.lbsRun(8);
-    // await this.lbsRun(10);
-    // await this.lbsRun(12);
-    // await this.lbsRun(14);
-    // await this.lbsRun(16);
+    await this.lbsRun(8);
+    await this.lbsRun(10);
+    await this.lbsRun(12);
+    await this.lbsRun(14);
+    await this.lbsRun(16);
 
     await this.llvsRun(8);
     await this.llvsRun(10);
