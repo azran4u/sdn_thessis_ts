@@ -169,10 +169,13 @@ export class LLVS extends Algorithm {
   private sortRequestsByExpectedRevenue(): VideoRequest[] {
     const gold_bl: VideoRequest[] = [];
     const silver_bl: VideoRequest[] = [];
-    const gold_el: VideoRequest[] = [];
+    const gold_el1: VideoRequest[] = [];
     const bronze_bl: VideoRequest[] = [];
-    const silver_el: VideoRequest[] = [];
-    const bronze_el: VideoRequest[] = [];
+    const silver_el1: VideoRequest[] = [];
+    const gold_el2: VideoRequest[] = [];
+    const bronze_el1: VideoRequest[] = [];
+    const silver_el2: VideoRequest[] = [];
+    const bronze_el2: VideoRequest[] = [];
     // sort by revenue table
     this.input.requests.forEach((request) => {
       const subscriber = this.input.subscribers.find(
@@ -182,32 +185,32 @@ export class LLVS extends Algorithm {
         gold_bl.push(request);
       } else if (subscriber.priority === "SILVER" && request.layer === "BASE") {
         silver_bl.push(request);
-      } else if (
-        subscriber.priority === "GOLD" &&
-        (request.layer === "EL1" || request.layer === "EL2")
-      ) {
-        gold_el.push(request);
+      } else if (subscriber.priority === "GOLD" && request.layer === "EL1") {
+        gold_el1.push(request);
       } else if (subscriber.priority === "BRONZE" && request.layer === "BASE") {
         bronze_bl.push(request);
-      } else if (
-        subscriber.priority === "SILVER" &&
-        (request.layer === "EL1" || request.layer === "EL2")
-      ) {
-        silver_el.push(request);
-      } else if (
-        subscriber.priority === "BRONZE" &&
-        (request.layer === "EL1" || request.layer === "EL2")
-      ) {
-        bronze_el.push(request);
+      } else if (subscriber.priority === "SILVER" && request.layer === "EL1") {
+        silver_el1.push(request);
+      } else if (subscriber.priority === "GOLD" && request.layer === "EL2") {
+        gold_el2.push(request);
+      } else if (subscriber.priority === "BRONZE" && request.layer === "EL1") {
+        bronze_el1.push(request);
+      } else if (subscriber.priority === "SILVER" && request.layer === "EL2") {
+        silver_el2.push(request);
+      } else if (subscriber.priority === "BRONZE" && request.layer === "EL2") {
+        bronze_el2.push(request);
       }
     });
     return [
       ...gold_bl,
       ...silver_bl,
-      ...gold_el,
+      ...gold_el1,
       ...bronze_bl,
-      ...silver_el,
-      ...bronze_el,
+      ...silver_el1,
+      ...gold_el2,
+      ...bronze_el1,
+      ...silver_el2,
+      ...bronze_el2,
     ];
   }
 
